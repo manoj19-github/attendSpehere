@@ -19,4 +19,4 @@ const envPath = path.resolve(process.cwd(), envFile);
 
 config({ path: envPath });
 
-console.log(`🌍 Loaded ENV: ${envFile}`);
+

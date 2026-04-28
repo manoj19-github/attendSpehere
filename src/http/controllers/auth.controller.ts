@@ -4,8 +4,7 @@ import { AuthService } from '../services/auth.service';
 export class AuthController {
 	static async register(req: Request, res: Response, next: NextFunction) {
 		try {
-			const { fullName, email, password, role = 'employee' } = req.body;
-
+			const { fullName, email, password, role } = req.body;
 			if (!fullName || !email || !password) {
 				return res.status(400).json({
 					success: false,
@@ -14,7 +13,6 @@ export class AuthController {
 			}
 
 			await AuthService.register(fullName, email, password, role);
-
 			return res.status(201).json({
 				success: true,
 				message: 'User registered successfully'
@@ -28,21 +26,25 @@ export class AuthController {
 		try {
 			const { email, password, androidId, fingerprint } = req.body;
 
-			if (!email || !password || !androidId || !fingerprint) {
+			if (!email || !androidId) {
 				return res.status(400).json({
 					success: false,
-					message: 'email, password, androidId, and fingerprint are required'
+					message: 'email and androidId are required'
+				});
+			}
+
+			// At least one auth method required
+			if (!password && !fingerprint) {
+				return res.status(400).json({
+					success: false,
+					message: 'password or fingerprint is required'
 				});
 			}
 
 			const result = await AuthService.login(email, password, androidId, fingerprint);
-
-			return res.status(200).json({
-				success: true,
-				data: result
-			});
+			return res.status(200).json({ success: true, data: result });
 		} catch (error: any) {
-			if (error.message.includes('not registered') || error.message.includes('verification failed')) {
+			if (error.message.includes('registered') || error.message.includes('verification')) {
 				return res.status(401).json({ success: false, message: error.message });
 			}
 			next(error);
@@ -53,7 +55,10 @@ export class AuthController {
 		try {
 			const { refreshToken } = req.body;
 			if (!refreshToken) {
-				return res.status(400).json({ success: false, message: 'refreshToken is required' });
+				return res.status(400).json({
+					success: false,
+					message: 'refreshToken is required'
+				});
 			}
 
 			const result = await AuthService.refreshToken(refreshToken);

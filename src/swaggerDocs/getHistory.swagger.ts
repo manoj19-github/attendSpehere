@@ -1,9 +1,9 @@
 /**
  * @swagger
- * /admin/users:
+ * /attendance/history:
  *   get:
- *     summary: List all users
- *     tags: [Admin]
+ *     summary: Get attendance history
+ *     tags: [Attendance]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -14,8 +14,7 @@
  *         name: limit
  *         schema: { type: integer, default: 20 }
  *     responses:
- *       200: { description: Users list }
- *       403: { description: Admin only }
+ *       200: { description: History retrieved }
  */
 
 export { };

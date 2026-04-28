@@ -28,5 +28,6 @@ export class AdminRoutes implements Routes {
 
 
 		this.router.get(`${this.path}/mis-report`, authenticate, authorizeAdmin, AdminController.downloadMISReport);
+		this.router.get(`${this.path}/user/:id/report`, authenticate, authorizeAdmin, AdminController.getUserReport);
 	}
 }

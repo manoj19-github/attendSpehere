@@ -1,17 +1,17 @@
-
 import { Router } from 'express';
 import { LocationController } from '../http/controllers/location.controller';
 import { authenticate } from '../http/middlewares/auth.middleware';
 import { Routes } from '../interfaces/routes.interface';
 
+
 /**
  * @swagger
  * tags:
  *   name: Location
- *   description: Real-time geolocation tracking and geofence detection
+ *   description: Geolocation tracking and geofence
  */
 export class LocationRoutes implements Routes {
-	path?: string | undefined;
+	path?: string;
 	router: Router;
 
 	constructor() {
@@ -23,5 +23,8 @@ export class LocationRoutes implements Routes {
 	private initializeRoutes(): void {
 
 		this.router.post(`${this.path}/ping`, authenticate, LocationController.ping);
+
+
+		this.router.post(`${this.path}/checkin`, authenticate, LocationController.manualCheckin);
 	}
 }

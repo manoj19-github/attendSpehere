@@ -1,12 +1,8 @@
-
 /**
  * @swagger
  * /attendance/report:
  *   get:
- *     summary: Get daily working hours report
- *     description: |
- *       Returns daily working hours calculated from the `user_daily_working_hours` view.
- *       The view pairs checkin/checkout events into sessions and sums hours per day.
+ *     summary: Get working hours report (date range)
  *     tags: [Attendance]
  *     security:
  *       - bearerAuth: []
@@ -14,34 +10,14 @@
  *       - in: query
  *         name: startDate
  *         required: true
- *         schema:
- *           type: string
- *           format: date
- *           example: "2024-01-01"
+ *         schema: { type: string, format: date }
  *       - in: query
  *         name: endDate
  *         required: true
- *         schema:
- *           type: string
- *           format: date
- *           example: "2024-01-31"
+ *         schema: { type: string, format: date }
  *     responses:
- *       200:
- *         description: Working hours report
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success: { type: boolean, example: true }
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/WorkingHoursReport'
- *       400:
- *         description: startDate and endDate are required
- *       401:
- *         description: Unauthorized
+ *       200: { description: Report data }
+ *       400: { description: Missing dates }
  */
 
 export { };

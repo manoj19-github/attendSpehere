@@ -1,10 +1,10 @@
-import { sequelize } from "../../config/dbConfig";
+import { sequelize } from '../../config/dbConfig';
+import { DeviceRepository } from '../../repository/device.repository';
 
-import { DeviceRepository } from "../../repository/device.repository";
 
 export class DeviceService {
 	static async registerDevice(
-		userId: string, androidId: string, deviceModel: string, osVersion: string, fingerprint?: string
+		userId: string, androidId: string, deviceModel: string, osVersion: string, fingerprint: string
 	) {
 		const transaction = await sequelize.transaction();
 		try {
@@ -26,5 +26,11 @@ export class DeviceService {
 			await transaction.rollback();
 			throw error;
 		}
+	}
+
+	static async getUserDevice(userId: string) {
+		const devices = await DeviceRepository.findByUserId(userId);
+		if (devices.length === 0) throw new Error('No device found');
+		return devices[0];
 	}
 }

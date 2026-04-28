@@ -6,7 +6,7 @@ const options: Options = {
 		info: {
 			title: 'AttendSphere API',
 			version: '1.0.0',
-			description: 'API documentation for MDM backend'
+			description: 'API documentation for AttendSphere backend'
 		},
 		servers: [
 			{

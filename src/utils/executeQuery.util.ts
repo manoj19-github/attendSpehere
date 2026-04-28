@@ -17,5 +17,3 @@ export const executeQuery = async <T>(options: ExecuteQueryOptions): Promise<T> 
 	});
 	return result as unknown as T;
 };
-
-

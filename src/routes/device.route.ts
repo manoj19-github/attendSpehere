@@ -5,6 +5,7 @@ import DTOValidationMiddleware from '../http/middlewares/apiValidator.middleware
 import { authenticate } from '../http/middlewares/auth.middleware';
 import { Routes } from '../interfaces/routes.interface';
 
+
 /**
  * @swagger
  * tags:
@@ -12,7 +13,7 @@ import { Routes } from '../interfaces/routes.interface';
  *   description: Device registration and management
  */
 export class DeviceRoutes implements Routes {
-	path?: string | undefined;
+	path?: string;
 	router: Router;
 
 	constructor() {
@@ -29,5 +30,7 @@ export class DeviceRoutes implements Routes {
 			authenticate,
 			DeviceController.registerDevice
 		);
+
+		this.router.get(`${this.path}/user`, authenticate, DeviceController.getUserDevice);
 	}
 }

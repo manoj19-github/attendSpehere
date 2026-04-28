@@ -14,20 +14,37 @@ export class AuthService {
 		return UserRepository.create({ fullName, email, password: hashedPassword, role });
 	}
 
-	static async login(email: string, password: string, androidId: string, fingerprint: string) {
+	/**
+	 * Login supports password OR fingerprint
+	 * Device must be registered first
+	 */
+	static async login(email: string, password: string | undefined, androidId: string, fingerprint: string | undefined) {
 		const users = await UserRepository.findByEmail(email);
 		if (users.length === 0) throw new Error('Invalid credentials');
 
 		const user = users[0];
-		const validPassword = await bcrypt.compare(password, user.password);
-		if (!validPassword) throw new Error('Invalid credentials');
 
+		// Verify password if provided, else verify fingerprint
+		if (password) {
+			const validPassword = await bcrypt.compare(password, user.password);
+			if (!validPassword) throw new Error('Invalid credentials');
+		} else if (fingerprint) {
+			// Fingerprint-based login: verify against stored device fingerprint
+			const devices = await DeviceRepository.findByUserId(user.id);
+			if (devices.length === 0 || devices[0].fingerprint !== fingerprint) {
+				throw new Error('Fingerprint verification failed');
+			}
+		} else {
+			throw new Error('Password or fingerprint required');
+		}
+
+		// Device verification
 		const devices = await DeviceRepository.findByUserId(user.id);
 		if (devices.length === 0) throw new Error('Device not registered. Please register your device first.');
 
 		const device = devices[0];
-		if (device.android_id !== androidId || device.fingerprint !== fingerprint) {
-			throw new Error('Device verification failed');
+		if (device.android_id !== androidId) {
+			throw new Error('Device verification failed - Android ID mismatch');
 		}
 
 		const accessToken = generateAccessToken({ userId: user.id, role: user.role });

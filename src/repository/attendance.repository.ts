@@ -3,8 +3,7 @@ import { executeQuery } from '../utils/executeQuery.util';
 
 export class AttendanceRepository {
 	/**
-	 * Insert a single attendance event (checkin or checkout).
-	 * Event-based design: each checkin/checkout is its own row.
+	 * Insert attendance event (checkin or checkout)
 	 */
 	static async insertEvent(data: {
 		userId: string;
@@ -24,7 +23,53 @@ export class AttendanceRepository {
 	}
 
 	/**
-	 * Fetch raw attendance events for a user (paginated).
+	 * Get today's events for a user
+	 */
+	static async getTodayEvents(userId: string) {
+		return executeQuery<any[]>({
+			query: `
+        SELECT id, event_type, timestamp_event, created_at
+        FROM attendance
+        WHERE user_id = :userId AND event_date = CURRENT_DATE
+        ORDER BY timestamp_event ASC
+      `,
+			replacements: { userId },
+			type: QueryTypes.SELECT
+		});
+	}
+
+	/**
+	 * Check if user has any checkin today
+	 */
+	static async hasCheckinToday(userId: string) {
+		const result = await executeQuery<any[]>({
+			query: `
+        SELECT COUNT(*) as count FROM attendance
+        WHERE user_id = :userId AND event_date = CURRENT_DATE AND event_type = 'checkin'
+      `,
+			replacements: { userId },
+			type: QueryTypes.SELECT
+		});
+		return parseInt(result[0]?.count || '0') > 0;
+	}
+
+	/**
+	 * Get last event of today
+	 */
+	static async getLastEventToday(userId: string) {
+		return executeQuery<any[]>({
+			query: `
+        SELECT event_type, timestamp_event FROM attendance
+        WHERE user_id = :userId AND event_date = CURRENT_DATE
+        ORDER BY timestamp_event DESC LIMIT 1
+      `,
+			replacements: { userId },
+			type: QueryTypes.SELECT
+		});
+	}
+
+	/**
+	 * Paginated history
 	 */
 	static async findByUserId(userId: string, limit: number, offset: number) {
 		return executeQuery<any[]>({
@@ -41,7 +86,7 @@ export class AttendanceRepository {
 	}
 
 	/**
-	 * Fetch raw attendance events within a date range.
+	 * Date range query
 	 */
 	static async findByDateRange(userId: string, startDate: string, endDate: string) {
 		return executeQuery<any[]>({
@@ -57,7 +102,7 @@ export class AttendanceRepository {
 	}
 
 	/**
-	 * Query the VIEW for daily working hours of a specific user.
+	 * Query VIEW for working hours
 	 */
 	static async getWorkingHoursByUser(userId: string, startDate: string, endDate: string) {
 		return executeQuery<any[]>({
@@ -73,7 +118,7 @@ export class AttendanceRepository {
 	}
 
 	/**
-	 * Query the VIEW for daily working hours of ALL users (admin MIS).
+	 * All users working hours (admin)
 	 */
 	static async getAllWorkingHours(startDate: string, endDate: string) {
 		return executeQuery<any[]>({

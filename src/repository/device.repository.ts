@@ -4,7 +4,7 @@ import { executeQuery } from '../utils/executeQuery.util';
 export class DeviceRepository {
 	static async create(data: {
 		userId: string; androidId: string; deviceModel: string;
-		osVersion: string; fingerprint?: string;
+		osVersion: string; fingerprint: string;
 	}, transaction?: any) {
 		return executeQuery({
 			query: `
@@ -28,7 +28,9 @@ export class DeviceRepository {
 
 	static async findByAndroidId(androidId: string) {
 		return executeQuery<any[]>({
-			query: `SELECT * FROM devices WHERE android_id = :androidId LIMIT 1`,
+			query: `SELECT d.*, u.id as user_id, u.email, u.role FROM devices d
+              JOIN users u ON u.id = d.user_id
+              WHERE d.android_id = :androidId LIMIT 1`,
 			replacements: { androidId },
 			type: QueryTypes.SELECT
 		});
@@ -36,7 +38,7 @@ export class DeviceRepository {
 
 	static async updateByUserId(data: {
 		userId: string; androidId: string; deviceModel: string;
-		osVersion: string; fingerprint?: string;
+		osVersion: string; fingerprint: string;
 	}, transaction?: any) {
 		return executeQuery({
 			query: `

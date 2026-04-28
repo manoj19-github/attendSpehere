@@ -1,18 +1,21 @@
 import { Router } from 'express';
 import { LoginDTO } from '../dtos/login.dto';
+
 import { RegistrationDTO } from '../dtos/registration.dto';
 import { AuthController } from '../http/controllers/auth.controller';
 import DTOValidationMiddleware from '../http/middlewares/apiValidator.middleware';
 import { Routes } from '../interfaces/routes.interface';
 
+
+
 /**
  * @swagger
  * tags:
  *   name: Auth
- *   description: User authentication and registration
+ *   description: Authentication endpoints
  */
 export class AuthRoutes implements Routes {
-	path?: string | undefined;
+	path?: string;
 	router: Router;
 
 	constructor() {
@@ -29,6 +32,6 @@ export class AuthRoutes implements Routes {
 		this.router.post(`${this.path}/login`, DTOValidationMiddleware(LoginDTO), AuthController.login);
 
 
-		this.router.post(`${this.path}/refresh-token`, AuthController.refreshToken);
+		this.router.post(`${this.path}/refresh`, AuthController.refreshToken);
 	}
 }

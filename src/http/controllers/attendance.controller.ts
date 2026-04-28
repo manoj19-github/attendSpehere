@@ -1,17 +1,28 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { searchPageSize } from '../../utils/constants.util';
+
+
+import { DEFAULT_PAGE_SIZE } from '../../utils/constants.util';
 import { AttendanceService } from '../services/attendance.service';
 
 export class AttendanceController {
 	static async getHistory(req: Request, res: Response, next: NextFunction) {
 		try {
-			const userId = (req as any).user.userId;
+			const userId = req.user!.userId;
 			const page = Number(req.query.page) || 1;
-			const limit = Number(req.query.limit) || searchPageSize;
+			const limit = Number(req.query.limit) || DEFAULT_PAGE_SIZE;
 
 			const data = await AttendanceService.getHistory(userId, page, limit);
+			return res.status(200).json({ success: true, data });
+		} catch (error) {
+			next(error);
+		}
+	}
 
+	static async getToday(req: Request, res: Response, next: NextFunction) {
+		try {
+			const userId = req.user!.userId;
+			const data = await AttendanceService.getToday(userId);
 			return res.status(200).json({ success: true, data });
 		} catch (error) {
 			next(error);
@@ -20,7 +31,7 @@ export class AttendanceController {
 
 	static async getReport(req: Request, res: Response, next: NextFunction) {
 		try {
-			const userId = (req as any).user.userId;
+			const userId = req.user!.userId;
 			const { startDate, endDate } = req.query as { startDate: string; endDate: string };
 
 			if (!startDate || !endDate) {

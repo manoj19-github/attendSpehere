@@ -1,14 +1,7 @@
-/**
- * Haversine formula to calculate great-circle distance between two points on Earth.
- * Returns distance in meters.
- */
 export const calculateHaversineDistance = (
-	lat1: number,
-	lon1: number,
-	lat2: number,
-	lon2: number
+	lat1: number, lon1: number, lat2: number, lon2: number
 ): number => {
-	const R = 6371e3; // Earth radius in meters
+	const R = 6371e3;
 	const φ1 = (lat1 * Math.PI) / 180;
 	const φ2 = (lat2 * Math.PI) / 180;
 	const Δφ = ((lat2 - lat1) * Math.PI) / 180;

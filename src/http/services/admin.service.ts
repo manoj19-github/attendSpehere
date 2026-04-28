@@ -3,7 +3,6 @@ import { AttendanceRepository } from '../../repository/attendance.repository';
 import { LocationRepository } from '../../repository/location.repository';
 import { UserRepository } from '../../repository/user.repository';
 
-
 export class AdminService {
 	static async getAllUsers(page: number, limit: number) {
 		const offset = (page - 1) * limit;
@@ -17,14 +16,24 @@ export class AdminService {
 		};
 	}
 
+	/**
+	 * ✅ NEW: Get user's raw GPS location history
+	 */
 	static async getUserLocationHistory(userId: string, startDate: string, endDate: string) {
 		return LocationRepository.findByUserIdAndDateRange(userId, startDate, endDate);
 	}
 
-	/**
-	 * Generate MIS Excel from the user_daily_working_hours VIEW.
-	 */
-	static async generateMonthlyMISReport(startDate: string, endDate: string) {
+	static async getUserReport(userId: string, startDate: string, endDate: string) {
+		const [locations, attendance, workingHours] = await Promise.all([
+			LocationRepository.findByUserIdAndDateRange(userId, startDate, endDate),
+			AttendanceRepository.findByDateRange(userId, startDate, endDate),
+			AttendanceRepository.getWorkingHoursByUser(userId, startDate, endDate)
+		]);
+
+		return { locations, attendance, workingHours };
+	}
+
+	static async generateMISReport(startDate: string, endDate: string) {
 		const reportData = await AttendanceRepository.getAllWorkingHours(startDate, endDate);
 
 		const worksheet = XLSX.utils.json_to_sheet(reportData.map((row: any) => ({
