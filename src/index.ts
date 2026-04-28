@@ -1,8 +1,9 @@
-import path from "path";
-
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import { config } from "dotenv";
+import path from "path";
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './config/swagger.config';
+
 import express, {
 	Application,
 	Request,
@@ -12,18 +13,18 @@ import express, {
 } from "express";
 import helmet from "helmet";
 import morgan from "morgan";
-
-import { connectDB } from "./config/dbConfig";
+import connectDB from "./config/dbConfig";
+import "./config/env.config";
 import { errorHandler, notFound } from "./http/middlewares/errorHandler.middleware";
-import { IUser } from "./models/user.schema";
+
 import RoutesMain from "./routes";
-import initializeWebSocket from "./websocket";
+
 
 // Extend Express Request
 declare global {
 	namespace Express {
 		interface Request {
-			user?: IUser;
+			user?: any;
 			deviceId?: string;
 			userId?: string;
 		}
@@ -36,7 +37,7 @@ class ExpressApp {
 	private routesMain = new RoutesMain();
 
 	constructor() {
-		config();
+
 		this.app = express();
 		this.PORT = process.env.PORT ? Number(process.env.PORT) : 5000;
 
@@ -93,6 +94,8 @@ class ExpressApp {
 			return res.render("index", { title: "WebSocket App" });
 		});
 
+		this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 		this.routesMain.initializeAllRoutes(this.app);
 
 		// Error handlers (must be last)
@@ -102,12 +105,12 @@ class ExpressApp {
 
 	public listen(): void {
 		// ✅ Create HTTP server
-		const SERVER = initializeWebSocket(this.app);
+
 
 
 		// ✅ Start server
-		SERVER.listen(this.PORT, "0.0.0.0", () => {
-			console.log(`🚀 Server + WebSocket running on port: ${this.PORT}`);
+		this.app.listen(this.PORT, "0.0.0.0", () => {
+			console.log(`🚀 Server running 	on port: ${this.PORT}`);
 			connectDB();
 		});
 	}

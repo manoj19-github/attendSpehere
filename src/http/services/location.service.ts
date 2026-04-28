@@ -1,10 +1,9 @@
-import { sequelize } from "../../config/dbConfig";
-import { redisClient, redisPublisher } from "../../config/redis.config";
-import { AttendanceRepository } from "../../repository/attendance.repository";
-import { LocationRepository } from "../../repository/location.repository";
-import { calculateHaversineDistance } from "../../utils/hervesin.util";
-import { isWithinWorkingHours } from "../../utils/workingHours.util";
-
+import { sequelize } from '../../config/dbConfig';
+import { redisClient, redisPublisher } from '../../config/redis.config';
+import { AttendanceRepository } from '../../repository/attendance.repository';
+import { LocationRepository } from '../../repository/location.repository';
+import { calculateHaversineDistance } from '../../utils/hervesin.util';
+import { isWithinWorkingHours } from '../../utils/workingHours.util';
 
 interface RedisUserState {
 	status: 'in_office_area' | 'out_office_area';
@@ -12,6 +11,7 @@ interface RedisUserState {
 	lastIntervalTime: string | null;
 	currentLat: number;
 	currentLng: number;
+	lastCheckinDate: string | null; // YYYY-MM-DD — ensures checkout pairs with correct date
 }
 
 export class LocationService {
@@ -25,17 +25,18 @@ export class LocationService {
 		const transaction = await sequelize.transaction();
 		const redisKey = `user:${userId}`;
 		const now = new Date();
+		const today = now.toISOString().split('T')[0];
 
 		try {
 			/* ==========================================================
-				 1. Calculate distance from fixed office using Haversine
+				 1. Haversine distance from fixed office location
 				 ========================================================== */
 			const distance = calculateHaversineDistance(
 				lat, lng, this.OFFICE_LAT, this.OFFICE_LNG
 			);
 
 			/* ==========================================================
-				 2. Fetch employee's real-time state from Redis
+				 2. Fetch real-time employee state from Redis
 				 Key format: user:{userId}
 				 ========================================================== */
 			const redisData = await redisClient.get(redisKey);
@@ -44,10 +45,11 @@ export class LocationService {
 				lastDistanceMark: 0,
 				lastIntervalTime: null,
 				currentLat: lat,
-				currentLng: lng
+				currentLng: lng,
+				lastCheckinDate: null
 			};
 
-			// Always update current coordinates in Redis
+			// Always update live coordinates in Redis
 			state.currentLat = lat;
 			state.currentLng = lng;
 
@@ -60,16 +62,24 @@ export class LocationService {
 					 3A. INSIDE GEOFENCE (<= 100m)
 					 ========================================================== */
 				if (state.status !== 'in_office_area') {
-					// Transition: Outside -> Inside → CHECK-IN
-					await AttendanceRepository.upsertCheckIn(userId, now, transaction);
+					// Transition: Outside → Inside → CHECK-IN event
+					await AttendanceRepository.insertEvent({
+						userId,
+						eventDate: today,
+						eventType: 'checkin',
+						timestampEvent: now
+					}, transaction);
+
 					await LocationRepository.create({
 						userId, latitude: lat, longitude: lng,
 						isInside: true, distance: null, recordedAt: now, logType: 'checkin'
 					}, transaction);
+
+					state.lastCheckinDate = today;
 					locationLogged = true;
 				}
 
-				// Reset tracking metrics while inside office
+				// Reset outside-office tracking metrics
 				state.status = 'in_office_area';
 				state.lastDistanceMark = 0;
 				state.lastIntervalTime = null;
@@ -79,8 +89,17 @@ export class LocationService {
 					 3B. OUTSIDE GEOFENCE (> 100m)
 					 ========================================================== */
 				if (state.status === 'in_office_area') {
-					// Transition: Inside -> Outside → CHECK-OUT
-					await AttendanceRepository.updateCheckOut(userId, now, transaction);
+					// Transition: Inside → Outside → CHECK-OUT event
+					// Use lastCheckinDate so overnight checkouts map to the correct work day
+					const checkoutDate = state.lastCheckinDate || today;
+
+					await AttendanceRepository.insertEvent({
+						userId,
+						eventDate: checkoutDate,
+						eventType: 'checkout',
+						timestampEvent: now
+					}, transaction);
+
 					state.lastIntervalTime = now.toISOString(); // start 15-min timer
 				}
 
@@ -128,7 +147,7 @@ export class LocationService {
 				 ========================================================== */
 			await redisClient.set(redisKey, JSON.stringify(state));
 
-			// Optional: Publish event for multi-instance scaling / future WebSocket
+			// Publish for horizontal scaling / future WebSocket consumers
 			redisPublisher.publish('location:updates', JSON.stringify({
 				userId, lat, lng, status: state.status, distance, timestamp: now.toISOString()
 			}));

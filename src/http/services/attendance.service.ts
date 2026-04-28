@@ -1,4 +1,4 @@
-import { AttendanceRepository } from '../../repository/attendance.repository';
+import { AttendanceRepository } from "../../repository/attendance.repository";
 
 export class AttendanceService {
 	static async getHistory(userId: string, page: number, limit: number) {
@@ -6,11 +6,18 @@ export class AttendanceService {
 		return AttendanceRepository.findByUserId(userId, limit, offset);
 	}
 
+	/**
+	 * Returns daily working hours by querying the VIEW.
+	 * The view pairs checkin/checkout events into sessions and sums hours.
+	 */
 	static async getReport(userId: string, startDate: string, endDate: string) {
-		return AttendanceRepository.findByDateRange(userId, startDate, endDate);
+		return AttendanceRepository.getWorkingHoursByUser(userId, startDate, endDate);
 	}
 
+	/**
+	 * Admin-level: daily working hours for ALL employees in date range.
+	 */
 	static async getDailyWorkingHoursReport(startDate: string, endDate: string) {
-		return AttendanceRepository.getReport(startDate, endDate);
+		return AttendanceRepository.getAllWorkingHours(startDate, endDate);
 	}
 }

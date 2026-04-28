@@ -3,9 +3,12 @@ import Redis from 'ioredis';
 
 dotenv.config();
 
+
+
 export const redisClient = new Redis({
 	host: process.env.REDIS_HOST || 'localhost',
 	port: parseInt(process.env.REDIS_PORT || '6379'),
+	password: process.env.REDIS_PASSWORD,   // 🔥 ADD THIS
 	maxRetriesPerRequest: null,
 	enableReadyCheck: false
 });
@@ -20,16 +23,17 @@ redisClient.on('error', (err) => console.error('Redis error:', err));
  */
 export const redisPublisher = new Redis({
 	host: process.env.REDIS_HOST || 'localhost',
-	port: parseInt(process.env.REDIS_PORT || '6379')
+	port: parseInt(process.env.REDIS_PORT || '6379'),
+	password: process.env.REDIS_PASSWORD,   // 🔥 ADD THIS
+	maxRetriesPerRequest: null,
+	enableReadyCheck: false
 });
 
 export const redisSubscriber = new Redis({
 	host: process.env.REDIS_HOST || 'localhost',
-	port: parseInt(process.env.REDIS_PORT || '6379')
+	port: parseInt(process.env.REDIS_PORT || '6379'),
+	password: process.env.REDIS_PASSWORD,   // 🔥 ADD THIS
+	maxRetriesPerRequest: null,
+	enableReadyCheck: false
 });
 
-redisSubscriber.subscribe('location:updates');
-redisSubscriber.on('message', (channel: any, message: any) => {
-	// Future: broadcast to WebSocket/SSE listeners
-	console.log(`[Pub/Sub] ${channel}:`, JSON.parse(message));
-});

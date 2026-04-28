@@ -1,7 +1,8 @@
-import XLSX from 'xlsx';
-import { AttendanceRepository } from "../../repository/attendance.repository";
-import { LocationRepository } from "../../repository/location.repository";
-import { UserRepository } from "../../repository/user.repository";
+import * as XLSX from 'xlsx';
+import { AttendanceRepository } from '../../repository/attendance.repository';
+import { LocationRepository } from '../../repository/location.repository';
+import { UserRepository } from '../../repository/user.repository';
+
 
 export class AdminService {
 	static async getAllUsers(page: number, limit: number) {
@@ -20,15 +21,16 @@ export class AdminService {
 		return LocationRepository.findByUserIdAndDateRange(userId, startDate, endDate);
 	}
 
+	/**
+	 * Generate MIS Excel from the user_daily_working_hours VIEW.
+	 */
 	static async generateMonthlyMISReport(startDate: string, endDate: string) {
-		const reportData = await AttendanceRepository.getReport(startDate, endDate);
+		const reportData = await AttendanceRepository.getAllWorkingHours(startDate, endDate);
 
 		const worksheet = XLSX.utils.json_to_sheet(reportData.map((row: any) => ({
 			'Employee ID': row.user_id,
 			'Employee Name': row.full_name,
-			'Date': row.date,
-			'Check In': row.check_in_time,
-			'Check Out': row.check_out_time,
+			'Date': row.event_date,
 			'Working Hours': row.working_hours
 		})));
 

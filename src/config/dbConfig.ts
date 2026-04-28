@@ -15,3 +15,15 @@ export const sequelize = new Sequelize(
 		pool: { max: 10, min: 0, acquire: 30000, idle: 10000 }
 	}
 );
+
+
+const connectDB = async (): Promise<void> => {
+	try {
+		await sequelize.authenticate();
+		console.log(`✅ PostgreSQL connected`);
+	} catch (error) {
+		console.error('❌ Database connection failed:', error);
+		process.exit(1);
+	}
+};
+export default connectDB;

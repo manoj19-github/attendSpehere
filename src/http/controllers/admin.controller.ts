@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-
 import { searchPageSize } from '../../utils/constants.util';
 import { AdminService } from '../services/admin.service';
 
