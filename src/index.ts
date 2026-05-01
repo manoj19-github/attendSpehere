@@ -2,6 +2,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import path from "path";
 import swaggerUi from 'swagger-ui-express';
+import "./config/env.config";
 import swaggerSpec from './config/swagger.config';
 
 import express, {
@@ -14,11 +15,15 @@ import express, {
 import helmet from "helmet";
 import morgan from "morgan";
 import connectDB from "./config/dbConfig";
-import "./config/env.config";
+import "./models";
+
 import { errorHandler, notFound } from "./http/middlewares/errorHandler.middleware";
 
-import RoutesMain from "./routes";
 
+
+import RoutesMain from "./routes";
+import { UtilsMain } from "./utils";
+import { logger } from "./utils/logger";
 
 // Extend Express Request
 declare global {
@@ -110,8 +115,11 @@ class ExpressApp {
 
 		// ✅ Start server
 		this.app.listen(this.PORT, "0.0.0.0", () => {
-			console.log(`🚀 Server running 	on port: ${this.PORT}`);
-			connectDB();
+			logger.info(`🚀 Server running 	on port:${this.PORT}`);
+			connectDB().then(() => {
+				UtilsMain.loadOfficeConfigToCache()
+			});
+
 		});
 	}
 }

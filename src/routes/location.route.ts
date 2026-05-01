@@ -26,5 +26,6 @@ export class LocationRoutes implements Routes {
 
 
 		this.router.post(`${this.path}/checkin`, authenticate, LocationController.manualCheckin);
+		this.router.post(`${this.path}/checkout`, authenticate, LocationController.manualCheckout);
 	}
 }

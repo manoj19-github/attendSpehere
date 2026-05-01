@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
 
+import { logger } from '../../utils/logger';
 import { LocationService } from '../services/location.service';
 
 
@@ -23,6 +24,8 @@ export class LocationController {
 
 			return res.status(200).json({ success: true, data: result });
 		} catch (error) {
+			logger.info('error: ', error);
+			logger.error(error);
 			next(error);
 		}
 	}
@@ -41,6 +44,23 @@ export class LocationController {
 
 			const result = await LocationService.manualCheckin(
 				userId, parseFloat(lat), parseFloat(lng)
+			);
+
+			return res.status(200).json({ success: true, data: result });
+		} catch (error) {
+			next(error);
+		}
+	}
+	static async manualCheckout(req: Request, res: Response, next: NextFunction) {
+		try {
+			const userId = req.user!.userId;
+			const { lat, lng } = req.body;
+
+			// lat/lng are optional — we record them if available, but don't block checkout
+			const result = await LocationService.manualCheckout(
+				userId,
+				lat !== null ? parseFloat(lat) : 0,
+				lng !== undefined ? parseFloat(lng) : 0
 			);
 
 			return res.status(200).json({ success: true, data: result });

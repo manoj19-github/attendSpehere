@@ -9,6 +9,8 @@ interface ExecuteQueryOptions {
 	transaction?: any;
 }
 
+
+
 export const executeQuery = async <T>(options: ExecuteQueryOptions): Promise<T> => {
 	const result = await sequelize.query(options.query, {
 		replacements: options.replacements,

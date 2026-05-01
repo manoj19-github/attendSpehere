@@ -1,4 +1,5 @@
 import { QueryTypes } from 'sequelize';
+import { UtilsMain } from '../utils';
 import { executeQuery } from '../utils/executeQuery.util';
 
 export class AttendanceRepository {
@@ -10,12 +11,33 @@ export class AttendanceRepository {
 		eventDate: string;
 		eventType: 'checkin' | 'checkout';
 		timestampEvent: Date;
+		latitude: number;
+		longitude: number;
+		distance: number;
 	}, transaction?: any) {
 		return executeQuery({
 			query: `
-        INSERT INTO attendance (id, user_id, event_date, event_type, timestamp_event)
-        VALUES (gen_random_uuid(), :userId, :eventDate, :eventType, :timestampEvent)
-      `,
+      INSERT INTO attendance (
+        id,
+        user_id,
+        event_date,
+        event_type,
+        timestamp_event,
+        latitude,
+        longitude,
+        distance
+      )
+      VALUES (
+        gen_random_uuid(),
+        :userId,
+        :eventDate,
+        :eventType,
+        :timestampEvent,
+        :latitude,
+        :longitude,
+        :distance
+      )
+    `,
 			replacements: data,
 			type: QueryTypes.INSERT,
 			transaction
@@ -26,11 +48,12 @@ export class AttendanceRepository {
 	 * Get today's events for a user
 	 */
 	static async getTodayEvents(userId: string) {
+
 		return executeQuery<any[]>({
 			query: `
         SELECT id, event_type, timestamp_event, created_at
         FROM attendance
-        WHERE user_id = :userId AND event_date = CURRENT_DATE
+        WHERE user_id = :userId  AND   event_date = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::date
         ORDER BY timestamp_event ASC
       `,
 			replacements: { userId },
@@ -45,7 +68,7 @@ export class AttendanceRepository {
 		const result = await executeQuery<any[]>({
 			query: `
         SELECT COUNT(*) as count FROM attendance
-        WHERE user_id = :userId AND event_date = CURRENT_DATE AND event_type = 'checkin'
+        WHERE user_id = :userId AND AND event_date = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::date AND event_type = 'checkin'
       `,
 			replacements: { userId },
 			type: QueryTypes.SELECT
@@ -60,7 +83,7 @@ export class AttendanceRepository {
 		return executeQuery<any[]>({
 			query: `
         SELECT event_type, timestamp_event FROM attendance
-        WHERE user_id = :userId AND event_date = CURRENT_DATE
+        WHERE user_id = :userId AND AND event_date = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::date
         ORDER BY timestamp_event DESC LIMIT 1
       `,
 			replacements: { userId },
@@ -89,14 +112,19 @@ export class AttendanceRepository {
 	 * Date range query
 	 */
 	static async findByDateRange(userId: string, startDate: string, endDate: string) {
+		const start = new Date(startDate);
+		const end = new Date(endDate);
+
+		const startIST = UtilsMain.getDateInIST(start);
+		const endIST = UtilsMain.getDateInIST(end);
 		return executeQuery<any[]>({
 			query: `
         SELECT id, event_date, event_type, timestamp_event, created_at
         FROM attendance
-        WHERE user_id = :userId AND event_date BETWEEN :startDate AND :endDate
+        WHERE user_id = :userId AND event_date BETWEEN :startIST AND :endIST
         ORDER BY event_date DESC, timestamp_event DESC
       `,
-			replacements: { userId, startDate, endDate },
+			replacements: { userId, startIST, endIST },
 			type: QueryTypes.SELECT
 		});
 	}
@@ -105,14 +133,20 @@ export class AttendanceRepository {
 	 * Query VIEW for working hours
 	 */
 	static async getWorkingHoursByUser(userId: string, startDate: string, endDate: string) {
+
+		const start = new Date(startDate);
+		const end = new Date(endDate);
+
+		const startIST = UtilsMain.getDateInIST(start);
+		const endIST = UtilsMain.getDateInIST(end);
 		return executeQuery<any[]>({
 			query: `
         SELECT user_id, full_name, event_date, working_hours
         FROM user_daily_working_hours
-        WHERE user_id = :userId AND event_date BETWEEN :startDate AND :endDate
+        WHERE user_id = :userId AND event_date BETWEEN :startIST AND :endIST
         ORDER BY event_date DESC
       `,
-			replacements: { userId, startDate, endDate },
+			replacements: { userId, startIST, endIST },
 			type: QueryTypes.SELECT
 		});
 	}
@@ -121,14 +155,18 @@ export class AttendanceRepository {
 	 * All users working hours (admin)
 	 */
 	static async getAllWorkingHours(startDate: string, endDate: string) {
+		const start = new Date(startDate);
+		const end = new Date(endDate);
+		const startIST = UtilsMain.getDateInIST(start);
+		const endIST = UtilsMain.getDateInIST(end);
 		return executeQuery<any[]>({
 			query: `
         SELECT user_id, full_name, event_date, working_hours
         FROM user_daily_working_hours
-        WHERE event_date BETWEEN :startDate AND :endDate
+        WHERE event_date BETWEEN :startIST AND :endIST
         ORDER BY event_date DESC, full_name ASC
       `,
-			replacements: { startDate, endDate },
+			replacements: { startIST, endIST },
 			type: QueryTypes.SELECT
 		});
 	}

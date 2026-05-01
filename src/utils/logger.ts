@@ -1,13 +1,12 @@
-import { ENVIRONMENT_FILE_PATH } from '../environment';
-import { config } from 'dotenv';
+
 import { existsSync, mkdirSync } from 'fs';
 import { join } from 'node:path';
 import winston from 'winston';
 import winstonDaily from 'winston-daily-rotate-file';
+import "../config/env.config";
 
-config({ path: ENVIRONMENT_FILE_PATH });
 
-console.log('process.env.NODE_ENV >>>> ', process.env.NODE_ENV);
+console.info('process.env.NODE_ENV >>>> ', process.env.NODE_ENV);
 
 // Logs root directory
 const logDir: string = join(__dirname, process.env.LOG_DIR!);

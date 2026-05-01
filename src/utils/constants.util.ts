@@ -1,1 +1,3 @@
 export const DEFAULT_PAGE_SIZE = 20;
+
+export const OFFICE_CONFIG_KEY = "OFFICE_CONFIG_KEY";

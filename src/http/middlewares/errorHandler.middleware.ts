@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { logger } from '../../utils/logger';
 const notFound = (req: Request, res: Response, next: NextFunction) => {
 	const error = new Error(`Not Found - ${req.originalUrl}`);
 	res.status(404);
@@ -6,6 +7,7 @@ const notFound = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+	logger.error('error: ', err);
 	const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
 	res.status(statusCode).json({
 		message: err.message,

@@ -1,6 +1,8 @@
 import { config } from 'dotenv';
 import path from 'path';
 
+
+
 const NODE_ENV = process.env.NODE_ENV || 'dev';
 
 // Map environment → file
@@ -15,8 +17,11 @@ const envFileMap: Record<string, string> = {
 // fallback to .env if not matched
 export const envFile = envFileMap[NODE_ENV] || '.env';
 
+
 const envPath = path.resolve(process.cwd(), envFile);
 
 config({ path: envPath });
+
+console.log('envFile: ', envFile);
 
 

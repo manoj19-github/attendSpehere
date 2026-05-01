@@ -1,4 +1,5 @@
 import { QueryTypes } from 'sequelize';
+import { UtilsMain } from '../utils';
 import { executeQuery } from '../utils/executeQuery.util';
 
 export class LocationRepository {
@@ -37,6 +38,13 @@ export class LocationRepository {
 	}
 
 	static async findByUserIdAndDateRange(userId: string, startDate: string, endDate: string) {
+
+		const start = new Date(startDate);
+		const end = new Date(endDate);
+
+		const startIST = UtilsMain.getDateInIST(start);
+		const endIST = UtilsMain.getDateInIST(end);
+
 		return executeQuery<any[]>({
 			query: `
         SELECT id, latitude, longitude, is_inside, distance, recorded_at, log_type, created_at
@@ -44,7 +52,7 @@ export class LocationRepository {
         WHERE user_id = :userId AND recorded_at BETWEEN :startDate AND :endDate
         ORDER BY recorded_at DESC
       `,
-			replacements: { userId, startDate, endDate },
+			replacements: { userId, startIST, endIST },
 			type: QueryTypes.SELECT
 		});
 	}

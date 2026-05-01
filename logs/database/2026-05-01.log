@@ -1,0 +1,4 @@
+{"label":"database","level":"debug","message":"Executing (default): SELECT 1+1 AS result","timestamp":"2026-05-01 23:56:12"}
+{"label":"database","level":"debug","message":"Executing (default): SELECT 1+1 AS result","timestamp":"2026-05-01 23:56:47"}
+{"label":"database","level":"debug","message":"Executing (default): SELECT 1+1 AS result","timestamp":"2026-05-01 23:58:24"}
+{"label":"database","level":"debug","message":"Executing (default): SELECT 1+1 AS result","timestamp":"2026-05-01 23:58:56"}

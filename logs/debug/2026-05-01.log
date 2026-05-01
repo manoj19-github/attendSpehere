@@ -1,0 +1,213 @@
+{"level":"error","name":"SequelizeHostNotReachableError","original":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"parent":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"timestamp":"2026-05-01 15:26:24"}
+{"level":"error","name":"SequelizeHostNotReachableError","original":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"parent":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"timestamp":"2026-05-01 15:26:55"}
+{"level":"error","name":"SequelizeHostNotReachableError","original":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"parent":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"timestamp":"2026-05-01 15:27:27"}
+{"level":"error","name":"SequelizeHostNotReachableError","original":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"parent":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"timestamp":"2026-05-01 15:27:59"}
+{"level":"error","name":"SequelizeHostNotReachableError","original":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"parent":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"timestamp":"2026-05-01 15:28:30"}
+{"level":"error","name":"SequelizeHostNotReachableError","original":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"parent":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"timestamp":"2026-05-01 15:29:02"}
+{"level":"error","name":"SequelizeHostNotReachableError","original":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"parent":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"timestamp":"2026-05-01 15:32:45"}
+{"level":"error","name":"SequelizeHostNotReachableError","original":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"parent":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"timestamp":"2026-05-01 15:32:45"}
+{"level":"error","name":"SequelizeHostNotReachableError","original":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"parent":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"timestamp":"2026-05-01 15:33:17"}
+{"level":"error","name":"SequelizeHostNotReachableError","original":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"parent":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"timestamp":"2026-05-01 15:33:17"}
+{"level":"error","name":"SequelizeHostNotReachableError","original":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"parent":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"timestamp":"2026-05-01 15:33:48"}
+{"level":"error","name":"SequelizeHostNotReachableError","original":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"parent":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"timestamp":"2026-05-01 15:33:48"}
+{"level":"error","name":"SequelizeHostNotReachableError","original":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"parent":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"timestamp":"2026-05-01 15:34:20"}
+{"level":"error","name":"SequelizeHostNotReachableError","original":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"parent":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"timestamp":"2026-05-01 15:34:20"}
+{"level":"error","name":"SequelizeHostNotReachableError","original":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"parent":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"timestamp":"2026-05-01 15:34:51"}
+{"level":"error","name":"SequelizeHostNotReachableError","original":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"parent":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"timestamp":"2026-05-01 15:34:51"}
+{"level":"error","name":"SequelizeHostNotReachableError","original":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"parent":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"timestamp":"2026-05-01 15:35:22"}
+{"level":"error","name":"SequelizeHostNotReachableError","original":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"parent":{"address":"152.67.5.18","code":"EHOSTUNREACH","errno":-4073,"port":5432,"syscall":"connect"},"timestamp":"2026-05-01 15:35:22"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:43:00"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:43:33"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:44:04"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:44:10"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:44:10"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:44:10"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:44:11"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:44:11"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:44:36"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:45:09"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:45:41"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:46:14"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:46:44"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:47:17"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:47:49"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:48:22"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:48:55"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:49:26"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:50:33"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:51:05"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:51:27"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:51:42"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:52:00"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:52:17"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:52:35"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:52:52"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:53:10"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:53:27"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:53:45"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:54:02"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:54:21"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:54:37"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:54:56"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:55:12"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:55:31"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 16:55:48"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:00:35"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:00:35"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:01:07"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:01:07"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:01:40"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:01:40"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:02:12"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:02:12"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:02:45"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:02:45"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:03:18"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:03:18"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:03:50"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:03:50"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:04:23"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:04:23"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:04:55"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:04:55"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:05:28"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:05:28"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:06:01"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:06:01"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:06:33"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:06:33"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:07:07"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:07:07"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:07:39"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:07:39"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:08:12"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:08:12"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:08:45"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:08:45"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:09:17"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:09:17"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:09:50"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:09:50"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:10:23"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:10:23"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:10:55"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:10:55"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:11:28"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:11:28"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:12:01"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:12:01"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:12:33"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:12:33"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:13:06"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:13:06"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:13:39"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:13:39"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:14:11"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:14:11"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:14:44"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:14:44"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:15:17"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:15:17"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:15:50"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:15:50"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:16:23"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:16:23"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:16:55"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:16:55"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:17:28"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:17:28"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:33:46"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:12"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:12"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:13"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:13"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:13"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:13"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:14"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:14"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:14"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:15"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:15"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:15"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:16"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:16"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:16"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:17"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:17"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:17"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:17"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:18"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:18"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:18"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:19"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:19"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:19"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:19"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:20"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:20"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:20"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:20"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:21"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:21"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:21"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:34:52"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:35:24"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:35:57"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:36:30"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:37:03"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:37:35"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:38:08"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:38:41"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:39:14"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:39:46"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:40:19"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:40:52"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:41:24"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:41:57"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:42:30"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:42:44"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:43:02"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:43:35"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:44:07"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:44:40"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:45:13"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:45:38"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:46:11"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:46:43"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:47:16"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:47:49"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:48:22"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:48:54"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:49:27"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:50:00"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:50:32"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:51:05"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:51:38"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:52:10"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:52:43"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:54:34"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:55:06"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:55:39"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:56:11"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:56:44"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:57:17"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:57:50"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:58:22"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:58:55"}
+{"level":"info","message":"distance >>> 125 >> ","timestamp":"2026-05-01 17:59:28"}
+{"level":"info","message":"🚀 Server running \ton port: 5000","timestamp":"2026-05-01 23:56:11"}
+{"level":"info","message":"Redis connected","timestamp":"2026-05-01 23:56:11"}
+{"label":"database","level":"debug","message":"Executing (default): SELECT 1+1 AS result","timestamp":"2026-05-01 23:56:12"}
+{"level":"info","message":"✅ PostgreSQL connected","timestamp":"2026-05-01 23:56:12"}
+{"level":"info","message":"🚀 Server running \ton port: 5000","timestamp":"2026-05-01 23:56:47"}
+{"level":"info","message":"Redis connected","timestamp":"2026-05-01 23:56:47"}
+{"label":"database","level":"debug","message":"Executing (default): SELECT 1+1 AS result","timestamp":"2026-05-01 23:56:47"}
+{"level":"info","message":"✅ PostgreSQL connected","timestamp":"2026-05-01 23:56:47"}
+{"level":"info","message":"🚀 Server running \ton port: 5000","timestamp":"2026-05-01 23:58:24"}
+{"level":"info","message":"Redis connected","timestamp":"2026-05-01 23:58:24"}
+{"label":"database","level":"debug","message":"Executing (default): SELECT 1+1 AS result","timestamp":"2026-05-01 23:58:24"}
+{"level":"info","message":"✅ PostgreSQL connected","timestamp":"2026-05-01 23:58:24"}
+{"level":"info","message":"🚀 Server running \ton port: 5000","timestamp":"2026-05-01 23:58:56"}
+{"level":"info","message":"Redis connected","timestamp":"2026-05-01 23:58:56"}
+{"label":"database","level":"debug","message":"Executing (default): SELECT 1+1 AS result","timestamp":"2026-05-01 23:58:56"}
+{"level":"info","message":"✅ PostgreSQL connected","timestamp":"2026-05-01 23:58:56"}

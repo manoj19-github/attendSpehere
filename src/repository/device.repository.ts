@@ -11,7 +11,7 @@ export class DeviceRepository {
 			query: `
         INSERT INTO devices (id, user_id, android_id, device_model, os_version, fingerprint)
         VALUES (gen_random_uuid(), :userId, :androidId, :deviceModel, :osVersion, :fingerprint)
-        RETURNING *
+        RETURNING user_id, android_id, device_model, os_version, fingerprint
       `,
 			replacements: data,
 			type: QueryTypes.INSERT,

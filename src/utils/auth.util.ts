@@ -1,6 +1,6 @@
 import JWT from 'jsonwebtoken';
-import { v4 as uuidv4 } from 'uuid';
 import crypto from 'node:crypto';
+import { v4 as uuidv4 } from 'uuid';
 export class AuthUtils {
 	static readonly JWT_ACCESS_TOKEN_EXPIRES = '1h'; // 1 hour
 	static readonly JWT_REFRESH_TOKEN_EXPIRES = '7d'; // 7 days
@@ -12,7 +12,7 @@ export class AuthUtils {
 	static generateAccessToken(payload: any): string {
 		const now = Math.floor(Date.now() / 1000); // Current UTC timestamp in seconds
 		const expiresIn = 60 * 60; // 1 hour in seconds
-		console.log('process.env.JWT_SECRET >>>>>> ', process.env.JWT_SECRET);
+		logger.info('process.env.JWT_SECRET >>>>>> ', process.env.JWT_SECRET);
 
 		return JWT.sign(
 			{

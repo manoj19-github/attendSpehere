@@ -1,7 +1,9 @@
-import dotenv from 'dotenv';
 import { Sequelize } from 'sequelize';
+import "../config/env.config";
 
-dotenv.config();
+
+import { logger } from '../utils/logger';
+
 
 export const sequelize = new Sequelize(
 	process.env.DB_NAME || 'attendance_db',
@@ -11,7 +13,9 @@ export const sequelize = new Sequelize(
 		host: process.env.DB_HOST || 'localhost',
 		port: parseInt(process.env.DB_PORT || '5432'),
 		dialect: 'postgres',
-		logging: false,
+		logging: (msg) => {
+			logger.debug(msg, { label: 'database' });
+		},
 		pool: { max: 10, min: 0, acquire: 30000, idle: 10000 }
 	}
 );
@@ -20,9 +24,12 @@ export const sequelize = new Sequelize(
 const connectDB = async (): Promise<void> => {
 	try {
 		await sequelize.authenticate();
-		console.log(`✅ PostgreSQL connected`);
+		logger.info(`✅ PostgreSQL connected`);
+
 	} catch (error) {
-		console.error('❌ Database connection failed:', error);
+
+
+		logger.error('❌ Database connection failed:', error);
 		process.exit(1);
 	}
 };

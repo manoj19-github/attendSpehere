@@ -1,10 +1,13 @@
+import { Transaction } from "sequelize";
 import { sequelize } from "../../config/dbConfig";
 import { redisClient, redisPublisher } from "../../config/redis.config";
 import { AttendanceRepository } from "../../repository/attendance.repository";
 import { LocationRepository } from "../../repository/location.repository";
 import { calculateHaversineDistance } from "../../utils/hervesin.util";
+import { logger } from "../../utils/logger";
 import { isWithinWorkingHours } from "../../utils/workingHours.util";
-
+import { HttpException } from "../exceptions/http.exceptions";
+import { OfficeSettingsService } from "./officeSettings.service";
 
 interface RedisUserState {
 	status: 'in_office_area' | 'out_office_area';
@@ -12,140 +15,239 @@ interface RedisUserState {
 	lastIntervalTime: string | null;
 	currentLat: number;
 	currentLng: number;
-	firstCheckinDone: boolean; // Track if manual first checkin completed
 	lastCheckinDate: string | null;
 }
 
 export class LocationService {
-	private static readonly OFFICE_LAT = parseFloat(process.env.OFFICE_LAT || '0');
-	private static readonly OFFICE_LNG = parseFloat(process.env.OFFICE_LNG || '0');
-	private static readonly OFFICE_RADIUS = parseFloat(process.env.OFFICE_RADIUS || '100');
-	private static readonly DISTANCE_THRESHOLD = 500;
-	private static readonly TIME_INTERVAL_MS = 15 * 60 * 1000;
+
+
+	/* ==========================================================
+		 🧠 REDIS HELPERS
+	========================================================== */
+
+	private static getToday() {
+		return new Date().toISOString().split('T')[0];
+	}
+
+	private static getAttendanceKey(userId: string, date: string) {
+		return `attendance:${userId}:${date}`;
+	}
+
+	public static async cleanOldKeys(userId: string) {
+		const keys = await redisClient.keys(`attendance:${userId}:*`);
+
+		const today = this.getToday();
+
+		for (const key of keys) {
+			if (!key.includes(today)) {
+				await redisClient.del(key);
+			}
+		}
+	}
+
+	private static getSecondsUntilMidnight() {
+		const now = new Date();
+		const midnight = new Date();
+		midnight.setHours(23, 59, 59, 999);
+		return Math.floor((midnight.getTime() - now.getTime()) / 1000);
+	}
+
+	private static async addEventToRedis(
+		userId: string,
+		type: 'checkin' | 'checkout',
+		now: Date
+	) {
+		const today = LocationService.getToday();
+		const key = LocationService.getAttendanceKey(userId, today);
+		await LocationService.cleanOldKeys(userId);
+
+		const event = JSON.stringify({
+			type,
+			time: now.toISOString()
+		});
+
+		await redisClient.rpush(key, event);
+
+		const ttl = await redisClient.ttl(key);
+		if (ttl === -1) {
+			await redisClient.expire(key, this.getSecondsUntilMidnight());
+		}
+	}
+
+	private static async calculateWorkingHours(userId: string) {
+		const today = this.getToday();
+		const key = this.getAttendanceKey(userId, today);
+
+		const eventsRaw = await redisClient.lrange(key, 0, -1);
+		if (!eventsRaw.length) return 0;
+
+		const events = eventsRaw.map(e => JSON.parse(e));
+
+		let totalMinutes = 0;
+		let lastCheckin: Date | null = null;
+
+		for (const event of events) {
+			if (event.type === 'checkin') {
+				lastCheckin = new Date(event.time);
+			} else if (event.type === 'checkout' && lastCheckin) {
+				totalMinutes +=
+					(new Date(event.time).getTime() - lastCheckin.getTime()) / (1000 * 60);
+				lastCheckin = null;
+			}
+		}
+
+		if (lastCheckin) {
+			totalMinutes += (Date.now() - lastCheckin.getTime()) / (1000 * 60);
+		}
+
+		return Math.round((totalMinutes / 60) * 100) / 100;
+	}
+
+	/* ==========================================================
+		 🚀 MAIN SERVICE
+	========================================================== */
 
 	static async processPing(userId: string, lat: number, lng: number) {
 		const transaction = await sequelize.transaction();
 		const redisKey = `user:${userId}`;
 		const now = new Date();
-		const today = now.toISOString().split('T')[0];
+		const today = this.getToday();
+
+
 
 		try {
-			/* ==========================================================
-				 1. Calculate Haversine distance from office
-				 ========================================================== */
+			const officeConfig = await OfficeSettingsService.getConfig();
 			const distance = calculateHaversineDistance(
-				lat, lng, this.OFFICE_LAT, this.OFFICE_LNG
+				lat, lng, officeConfig.OFFICE_LAT, officeConfig.OFFICE_LNG
 			);
 
-			/* ==========================================================
-				 2. Fetch real-time state from Redis
-				 ========================================================== */
 			const redisData = await redisClient.get(redisKey);
-			let state: RedisUserState = redisData ? JSON.parse(redisData) : {
-				status: 'out_office_area',
-				lastDistanceMark: 0,
-				lastIntervalTime: null,
-				currentLat: lat,
-				currentLng: lng,
-				firstCheckinDone: false,
-				lastCheckinDate: null
-			};
 
-			// Always update live coordinates
+			let state: RedisUserState = redisData
+				? JSON.parse(redisData)
+				: {
+					status: 'out_office_area',
+					lastDistanceMark: 0,
+					lastIntervalTime: null,
+					currentLat: lat,
+					currentLng: lng,
+					lastCheckinDate: null
+				};
+
 			state.currentLat = lat;
 			state.currentLng = lng;
 
-			const isInside = distance <= this.OFFICE_RADIUS;
+			const firstCheckinDone = state.lastCheckinDate === today;
+			logger.info("distance >>> 125 >> ", distance);
+			logger.info("distance >>> 125 >> ", distance);
+			const isInside = distance <= officeConfig.OFFICE_RADIUS;
 			const isWorkingHours = isWithinWorkingHours(now);
+
 			let locationLogged = false;
 			let attendanceEvent: 'checkin' | 'checkout' | null = null;
 
 			if (!isWorkingHours) {
-				// Outside working hours: only update Redis coords, no attendance logic
 				await redisClient.set(redisKey, JSON.stringify(state));
 				await transaction.commit();
+
 				return {
-					distance: Math.round(distance * 100) / 100,
+					distance,
 					status: state.status,
-					isWorkingHours: false,
-					locationLogged: false,
+					isWorkingHours,
 					attendanceEvent: null,
-					message: 'Outside working hours - tracking paused'
+					totalHours: await this.calculateWorkingHours(userId)
 				};
 			}
 
+			/* ================= INSIDE ================= */
 			if (isInside) {
-				/* ==========================================================
-					 INSIDE OFFICE (≤ 100m)
-					 ========================================================== */
 				if (state.status !== 'in_office_area') {
-					// Transition: Outside → Inside
-
-					// Check if first checkin done today
-					if (!state.firstCheckinDone) {
-						// First entry of day - require manual checkin (handled by separate API)
-						// Just update status, don't auto checkin
-						state.status = 'in_office_area';
-					} else {
-						// Re-entry after first manual checkin → AUTO CHECKIN
+					if (firstCheckinDone) {
+						// AUTO CHECKIN
 						await AttendanceRepository.insertEvent({
-							userId, eventDate: today, eventType: 'checkin', timestampEvent: now
+							userId,
+							eventDate: today,
+							eventType: 'checkin',
+							latitude: lat,
+							longitude: lng,
+							distance,
+							timestampEvent: now
 						}, transaction);
 
-						await LocationRepository.create({
-							userId, latitude: lat, longitude: lng,
-							isInside: true, distance: null, recordedAt: now, logType: 'checkin'
-						}, transaction);
+						await this.addEventToRedis(userId, 'checkin', now);
 
 						state.lastCheckinDate = today;
 						attendanceEvent = 'checkin';
 						locationLogged = true;
-						state.status = 'in_office_area';
 					}
+
+					state.status = 'in_office_area';
 				}
 
-				// Reset outside tracking
 				state.lastDistanceMark = 0;
 				state.lastIntervalTime = null;
+			}
 
-			} else {
-				/* ==========================================================
-					 OUTSIDE OFFICE (> 100m)
-					 ========================================================== */
+			/* ================= OUTSIDE ================= */
+			else {
 				if (state.status === 'in_office_area') {
-					// Transition: Inside → Outside → AUTO CHECKOUT
 					const checkoutDate = state.lastCheckinDate || today;
 
 					await AttendanceRepository.insertEvent({
-						userId, eventDate: checkoutDate, eventType: 'checkout', timestampEvent: now
+						userId,
+						eventDate: checkoutDate,
+						eventType: 'checkout',
+						timestampEvent: now,
+						latitude: lat,
+						longitude: lng,
+						distance: distance,
 					}, transaction);
 
+					await this.addEventToRedis(userId, 'checkout', now);
+
 					attendanceEvent = 'checkout';
-					state.lastIntervalTime = now.toISOString();
 				}
 
 				state.status = 'out_office_area';
 
-				// Distance-based logging (500m, 1000m, 1500m...)
-				const currentMark = Math.floor(distance / this.DISTANCE_THRESHOLD) * this.DISTANCE_THRESHOLD;
-				if (currentMark > (state.lastDistanceMark || 0)) {
+				const currentMark =
+					Math.floor(distance / officeConfig.DISTANCE_THRESHOLD) *
+					officeConfig.DISTANCE_THRESHOLD;
+
+				if (currentMark > state.lastDistanceMark) {
 					await LocationRepository.create({
-						userId, latitude: lat, longitude: lng,
-						isInside: false, distance, recordedAt: now, logType: 'distance'
+						userId,
+						latitude: lat,
+						longitude: lng,
+						isInside: false,
+						distance,
+						recordedAt: now,
+						logType: 'distance'
 					}, transaction);
+
 					state.lastDistanceMark = currentMark;
 					locationLogged = true;
 				}
 
-				// Time-based logging (every 15 min)
-				const lastInterval = state.lastIntervalTime ? new Date(state.lastIntervalTime) : null;
-				const shouldLogByTime = !lastInterval || (now.getTime() - lastInterval.getTime()) >= this.TIME_INTERVAL_MS;
+				const lastInterval = state.lastIntervalTime
+					? new Date(state.lastIntervalTime)
+					: null;
+
+				const shouldLogByTime =
+					!lastInterval ||
+					now.getTime() - lastInterval.getTime() >= officeConfig.TIME_INTERVAL_MS;
 
 				if (shouldLogByTime && !locationLogged) {
 					await LocationRepository.create({
-						userId, latitude: lat, longitude: lng,
-						isInside: false, distance, recordedAt: now, logType: 'interval'
+						userId,
+						latitude: lat,
+						longitude: lng,
+						isInside: false,
+						distance,
+						recordedAt: now,
+						logType: 'interval'
 					}, transaction);
+
 					locationLogged = true;
 				}
 
@@ -157,20 +259,30 @@ export class LocationService {
 			await transaction.commit();
 			await redisClient.set(redisKey, JSON.stringify(state));
 
-			// Publish for real-time updates
+			const totalHours = await this.calculateWorkingHours(userId);
+
 			redisPublisher.publish('location:updates', JSON.stringify({
-				userId, lat, lng, status: state.status, distance,
-				attendanceEvent, timestamp: now.toISOString()
+				userId,
+				lat,
+				lng,
+				status: state.status,
+				distance,
+				attendanceEvent,
+				totalHours,
+				timestamp: now.toISOString()
 			}));
 
 			return {
 				distance: Math.round(distance * 100) / 100,
 				status: state.status,
 				isWorkingHours,
-				locationLogged,
 				attendanceEvent,
-				firstCheckinDone: state.firstCheckinDone,
-				officeLocation: { lat: this.OFFICE_LAT, lng: this.OFFICE_LNG }
+				firstCheckinDone,
+				totalHours,
+				officeLocation: {
+					lat: officeConfig.OFFICE_LAT,
+					lng: officeConfig.OFFICE_LNG
+				}
 			};
 
 		} catch (error) {
@@ -179,48 +291,52 @@ export class LocationService {
 		}
 	}
 
-	/**
-	 * Manual first checkin of the day
-	 */
+	/* ==========================================================
+		 ✋ MANUAL CHECKIN
+	========================================================== */
+
 	static async manualCheckin(userId: string, lat: number, lng: number) {
 		const transaction = await sequelize.transaction();
 		const redisKey = `user:${userId}`;
 		const now = new Date();
-		const today = now.toISOString().split('T')[0];
+		const today = this.getToday();
 
 		try {
+			const officeConfig = await OfficeSettingsService.getConfig();
 			const distance = calculateHaversineDistance(
-				lat, lng, this.OFFICE_LAT, this.OFFICE_LNG
+				lat, lng, officeConfig.OFFICE_LAT, officeConfig.OFFICE_LNG
 			);
 
-			if (distance > this.OFFICE_RADIUS) {
-				throw new Error('You must be within office premises to check in');
+			if (distance > officeConfig.OFFICE_RADIUS) {
+				throw new HttpException(400, 'You must be inside office');
 			}
 
-			// Insert checkin event
 			await AttendanceRepository.insertEvent({
-				userId, eventDate: today, eventType: 'checkin', timestampEvent: now
+				userId,
+				eventDate: today,
+				eventType: 'checkin',
+				timestampEvent: now,
+				latitude: lat,
+				longitude: lng,
+				distance: distance,
 			}, transaction);
 
-			await LocationRepository.create({
-				userId, latitude: lat, longitude: lng,
-				isInside: true, distance: null, recordedAt: now, logType: 'checkin'
-			}, transaction);
+			await this.addEventToRedis(userId, 'checkin', now);
 
-			// Update Redis state
 			const redisData = await redisClient.get(redisKey);
-			let state: RedisUserState = redisData ? JSON.parse(redisData) : {
-				status: 'out_office_area',
-				lastDistanceMark: 0,
-				lastIntervalTime: null,
-				currentLat: lat,
-				currentLng: lng,
-				firstCheckinDone: false,
-				lastCheckinDate: null
-			};
+
+			let state: RedisUserState = redisData
+				? JSON.parse(redisData)
+				: {
+					status: 'out_office_area',
+					lastDistanceMark: 0,
+					lastIntervalTime: null,
+					currentLat: lat,
+					currentLng: lng,
+					lastCheckinDate: null
+				};
 
 			state.status = 'in_office_area';
-			state.firstCheckinDone = true;
 			state.lastCheckinDate = today;
 			state.currentLat = lat;
 			state.currentLng = lng;
@@ -229,7 +345,6 @@ export class LocationService {
 			await redisClient.set(redisKey, JSON.stringify(state));
 
 			return {
-				distance: Math.round(distance * 100) / 100,
 				status: 'in_office_area',
 				message: 'Check-in successful'
 			};
@@ -237,6 +352,84 @@ export class LocationService {
 		} catch (error) {
 			await transaction.rollback();
 			throw error;
+		}
+	}
+
+	static async manualCheckout(
+		userId: string,
+		lat: number,
+		lng: number
+	) {
+		let transaction: Transaction | undefined;
+		try {
+			transaction = await sequelize.transaction();
+			const officeConfig = await OfficeSettingsService.getConfig();
+			const redisKey = `user:${userId}`;
+			const now = new Date();
+			const today = this.getToday();
+			const distance = calculateHaversineDistance(
+				lat, lng, officeConfig.OFFICE_LAT, officeConfig.OFFICE_LNG
+			);
+
+
+			// 1. Verify user has a checkin today
+			const todayEvents = await AttendanceRepository.getTodayEvents(userId);
+
+			if (!todayEvents || todayEvents.length === 0) {
+				throw new HttpException(400, 'No attendance record found for today');
+			}
+
+			const lastEvent = todayEvents[todayEvents.length - 1];
+			if (lastEvent.event_type !== 'checkin') {
+				throw new HttpException(400, 'You are not currently checked in');
+			}
+
+			// 2. Insert checkout event (NO distance check — allows outside-office checkout)
+			await AttendanceRepository.insertEvent(
+				{
+					userId,
+					eventDate: today,
+					eventType: 'checkout',
+					timestampEvent: now,
+					latitude: lat ?? 0,
+					longitude: lng ?? 0,
+					distance
+				},
+				transaction
+			);
+
+			// 3. Push to Redis stream
+			await this.addEventToRedis(userId, 'checkout', now);
+
+			// 4. Update Redis user state
+			const redisData = await redisClient.get(redisKey);
+			let state: RedisUserState = redisData
+				? JSON.parse(redisData)
+				: {
+					status: 'out_office_area',
+					lastDistanceMark: 0,
+					lastIntervalTime: null,
+					currentLat: lat,
+					currentLng: lng,
+					lastCheckinDate: null,
+				};
+
+			state.status = 'out_office_area';
+			state.currentLat = lat ?? 0;
+			state.currentLng = lng ?? 0;
+			state.lastDistanceMark = distance
+
+			await transaction.commit();
+			await redisClient.set(redisKey, JSON.stringify(state));
+
+			return {
+				status: 'out_office_area',
+				message: 'Check-out successful',
+				checkoutTime: now.toISOString(),
+			};
+		} catch (error) {
+			await transaction?.rollback();
+
 		}
 	}
 }

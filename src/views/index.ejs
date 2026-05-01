@@ -56,7 +56,7 @@
 		socket.onmessage = (event) => {
 			const li = document.createElement("li");
 			li.textContent = event.data;
-			console.log('event.data;: ', event.data);
+			logger.info('event.data;: ', event.data);
 			document.getElementById("messages").appendChild(li);
 		};
 

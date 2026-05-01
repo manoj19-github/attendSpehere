@@ -1,0 +1,20 @@
+{
+    "keep": {
+        "days": false,
+        "amount": 30
+    },
+    "auditLog": "C:\\Users\\santr\\attendSphere\\logs\\debug\\.1cff3d55091a8aec58e27aa5bcb656376565c89c-audit.json",
+    "files": [
+        {
+            "date": 1777625470668,
+            "name": "C:\\Users\\santr\\attendSphere\\logs\\debug\\2026-05-01.log",
+            "hash": "3b96bf9d4f5370c251f7b8436d6d2eaa938662eccaf27f5c0f20285b56b17180"
+        },
+        {
+            "date": 1777660215618,
+            "name": "C:\\Users\\santr\\attendSphere\\logs\\debug\\2026-05-02.log",
+            "hash": "677972aa8dfb4237160ac0a2d532fe0a62e8d38023cf668b4f8796684f81f194"
+        }
+    ],
+    "hashType": "sha256"
+}
