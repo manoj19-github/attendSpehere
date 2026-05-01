@@ -32,9 +32,24 @@ export class RegistrationDTO {
 	})
 	role?: 'admin' | 'employee' = 'employee';
 
-	// Device binding (important for your system)
-	@IsOptional()
+	// Device binding fields
+
 	@IsString()
 	@Trim()
-	deviceId?: string;
+	fingerPrint!: string;
+
+
+	@IsString()
+	@Trim()
+	androidId!: string;
+
+
+	@IsString()
+	@Trim()
+	deviceModel!: string;
+
+
+	@IsString()
+	@Trim()
+	osVersion!: string;
 }

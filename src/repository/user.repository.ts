@@ -1,4 +1,4 @@
-import { QueryTypes } from 'sequelize';
+import { QueryTypes, Transaction } from 'sequelize';
 import { executeQuery } from '../utils/executeQuery.util';
 
 export class UserRepository {
@@ -15,11 +15,12 @@ export class UserRepository {
 		});
 	}
 
-	static async findByEmail(email: string) {
+	static async findByEmail(email: string, transaction?: Transaction) {
 		return executeQuery<any[]>({
 			query: `SELECT * FROM users WHERE email = :email LIMIT 1`,
 			replacements: { email },
-			type: QueryTypes.SELECT
+			type: QueryTypes.SELECT,
+			transaction
 		});
 	}
 

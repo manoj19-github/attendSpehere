@@ -1,10 +1,15 @@
 import { NextFunction, Request, Response } from 'express';
+import { Transaction } from 'sequelize';
+import { sequelize } from '../../config/dbConfig';
 import { AuthService } from '../services/auth.service';
 
 export class AuthController {
 	static async register(req: Request, res: Response, next: NextFunction) {
+		let transaction: Transaction | undefined;
 		try {
-			const { fullName, email, password, role } = req.body;
+			transaction = await sequelize.transaction();
+			const { fullName, email, password, role, fingerPrint, androidId, deviceModel, osVersion } = req.body;
+			console.log('fingerPrint: ', fingerPrint);
 			if (!fullName || !email || !password) {
 				return res.status(400).json({
 					success: false,
@@ -12,10 +17,37 @@ export class AuthController {
 				});
 			}
 
-			await AuthService.register(fullName, email, password, role);
+			await AuthService.register({ fullName, email, password, role, fingerPrint, androidId, deviceModel, osVersion }, transaction);
+			transaction.commit();
 			return res.status(201).json({
 				success: true,
 				message: 'User registered successfully'
+			});
+		} catch (error) {
+			console.log('error: ', error);
+			transaction?.rollback();
+			next(error);
+		}
+	}
+
+	static async getUserFromToken(req: Request, res: Response, next: NextFunction) {
+		try {
+			const user = (req as any).user;
+			console.log('user: ', user);
+
+			if (!user) {
+				return res.status(401).json({
+					success: false,
+					message: 'Invalid token'
+				});
+			}
+
+			return res.status(200).json({
+				success: true,
+				data: {
+					user,
+					token: req.headers.authorization?.split(' ')[1]
+				}
 			});
 		} catch (error) {
 			next(error);
@@ -23,8 +55,10 @@ export class AuthController {
 	}
 
 	static async login(req: Request, res: Response, next: NextFunction) {
+		let transaction: Transaction | undefined;
 		try {
-			const { email, password, androidId, fingerprint } = req.body;
+			transaction = await sequelize.transaction();
+			const { email, password, androidId, fingerPrint } = req.body;
 
 			if (!email || !androidId) {
 				return res.status(400).json({
@@ -34,17 +68,23 @@ export class AuthController {
 			}
 
 			// At least one auth method required
-			if (!password && !fingerprint) {
+			if (!password && !fingerPrint) {
 				return res.status(400).json({
 					success: false,
 					message: 'password or fingerprint is required'
 				});
 			}
 
-			const result = await AuthService.login(email, password, androidId, fingerprint);
+
+			console.log("req.body: ", req.body);
+
+			const result = await AuthService.login(email, password, androidId, fingerPrint, transaction);
+			transaction.commit();
 			return res.status(200).json({ success: true, data: result });
 		} catch (error: any) {
-			if (error.message.includes('registered') || error.message.includes('verification')) {
+			console.log('error: ', error?.message);
+			transaction?.rollback();
+			if (error.message.includes('registered') || error.message.includes('verification') || error.message.includes('Invalid credentials')) {
 				return res.status(401).json({ success: false, message: error.message });
 			}
 			next(error);

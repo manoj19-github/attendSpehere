@@ -1,4 +1,5 @@
-import { QueryTypes } from 'sequelize';
+
+import { QueryTypes, Transaction } from 'sequelize';
 import { executeQuery } from '../utils/executeQuery.util';
 
 export class DeviceRepository {
@@ -18,11 +19,12 @@ export class DeviceRepository {
 		});
 	}
 
-	static async findByUserId(userId: string) {
+	static async findByUserId(userId: string, transaction?: Transaction) {
 		return executeQuery<any[]>({
 			query: `SELECT * FROM devices WHERE user_id = :userId LIMIT 1`,
 			replacements: { userId },
-			type: QueryTypes.SELECT
+			type: QueryTypes.SELECT,
+			transaction
 		});
 	}
 
@@ -32,6 +34,14 @@ export class DeviceRepository {
               JOIN users u ON u.id = d.user_id
               WHERE d.android_id = :androidId LIMIT 1`,
 			replacements: { androidId },
+			type: QueryTypes.SELECT
+		});
+	}
+
+	static async findByFingerPrint(fingerPrint: string) {
+		return executeQuery<any[]>({
+			query: `SELECT d.* FROM devices d WHERE d.fingerprint = :fingerPrint LIMIT 1`,
+			replacements: { fingerPrint },
 			type: QueryTypes.SELECT
 		});
 	}

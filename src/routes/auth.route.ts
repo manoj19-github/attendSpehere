@@ -4,6 +4,7 @@ import { LoginDTO } from '../dtos/login.dto';
 import { RegistrationDTO } from '../dtos/registration.dto';
 import { AuthController } from '../http/controllers/auth.controller';
 import DTOValidationMiddleware from '../http/middlewares/apiValidator.middleware';
+import { authenticate } from '../http/middlewares/auth.middleware';
 import { Routes } from '../interfaces/routes.interface';
 
 
@@ -33,5 +34,6 @@ export class AuthRoutes implements Routes {
 
 
 		this.router.post(`${this.path}/refresh`, AuthController.refreshToken);
+		this.router.get(`${this.path}/me`, authenticate, AuthController.getUserFromToken);
 	}
 }
