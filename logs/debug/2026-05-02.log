@@ -338,3 +338,8 @@
 {"label":"database","level":"debug","message":"Executing (default): SELECT 1+1 AS result","timestamp":"2026-05-02 01:48:42"}
 {"level":"info","message":"✅ PostgreSQL connected","timestamp":"2026-05-02 01:48:42"}
 {"level":"info","message":"✅ Office config cached in Redis","timestamp":"2026-05-02 01:48:42"}
+{"level":"info","message":"🚀 Server running \ton port:5000","timestamp":"2026-05-02 01:48:49"}
+{"level":"info","message":"Redis connected","timestamp":"2026-05-02 01:48:49"}
+{"label":"database","level":"debug","message":"Executing (default): SELECT 1+1 AS result","timestamp":"2026-05-02 01:48:50"}
+{"level":"info","message":"✅ PostgreSQL connected","timestamp":"2026-05-02 01:48:50"}
+{"level":"info","message":"✅ Office config cached in Redis","timestamp":"2026-05-02 01:48:50"}
