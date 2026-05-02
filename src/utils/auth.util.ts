@@ -12,7 +12,7 @@ export class AuthUtils {
 	static generateAccessToken(payload: any): string {
 		const now = Math.floor(Date.now() / 1000); // Current UTC timestamp in seconds
 		const expiresIn = 60 * 60; // 1 hour in seconds
-		logger.info('process.env.JWT_SECRET >>>>>> ', process.env.JWT_SECRET);
+
 
 		return JWT.sign(
 			{

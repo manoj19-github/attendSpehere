@@ -1,16 +1,21 @@
+import { OfficeConfig } from "../types";
+
 /**
  * Checks if current time is within working hours.
  * Default: Monday–Friday, 09:00–18:00
  */
-export const isWithinWorkingHours = (date: Date = new Date()): boolean => {
-	const day = date.getDay();
-	if (day === 0 || day === 6) return false;
+export const isWithinWorkingHours = ({ now = new Date(), officeConfig }: { now: Date; officeConfig: OfficeConfig }): boolean => {
+	const day = now.getDay();
+	if (!officeConfig.WORKING_HOURS.days.includes(day)) {
 
-	const hour = date.getHours();
-	const minute = date.getMinutes();
+		return false;
+	}
+
+	const hour = now.getHours();
+	const minute = now.getMinutes();
 	const timeDecimal = hour + minute / 60;
 
-	return timeDecimal >= 9 && timeDecimal < 18;
+	return timeDecimal >= officeConfig.WORKING_HOURS.start && timeDecimal <= officeConfig.WORKING_HOURS.end;
 };
 
 /**

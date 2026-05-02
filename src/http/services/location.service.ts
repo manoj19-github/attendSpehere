@@ -154,7 +154,9 @@ export class LocationService {
 
 			const firstCheckinDone = state.lastCheckinDate === today;
 			const isInside = distance <= officeConfig.OFFICE_RADIUS;
-			const isWorkingHours = isWithinWorkingHours(now);
+			console.log('isInside: ', isInside);
+			const isWorkingHours = isWithinWorkingHours({ now, officeConfig });
+			console.log("isWorkingHours >>> 159 >> ", isWorkingHours);
 
 			let locationLogged = false;
 			let attendanceEvent: 'checkin' | 'checkout' | null = null;
@@ -175,6 +177,7 @@ export class LocationService {
 
 			/* ================= INSIDE ================= */
 			if (isInside) {
+				console.log("state.status  >>> ", state.status);
 				if (state.status !== 'in_office_area') {
 					if (!firstCheckinDone) {
 						await AttendanceRepository.insertEvent(
