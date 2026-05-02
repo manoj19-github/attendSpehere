@@ -1,13 +1,16 @@
 import { Server as HttpServer } from 'http';
 import { Socket, Server as SocketIOServer } from 'socket.io';
-import { redisClient } from './redis.config';
-
-import { LocationService } from '../http/services/location.service';
-import { logger } from '../utils/logger';
+import { LocationService } from "../http/services/location.service";
+import { logger } from "../utils/logger";
+import { redisSubscriber } from './redis.config';
 
 let io: SocketIOServer;
+let isSubscribed = false;
 
-export const initializeSocketIO = (server: HttpServer): SocketIOServer => {
+export const initializeSocketIO = async (
+	server: HttpServer
+): Promise<SocketIOServer> => {
+
 	io = new SocketIOServer(server, {
 		cors: {
 			origin: '*',
@@ -16,39 +19,58 @@ export const initializeSocketIO = (server: HttpServer): SocketIOServer => {
 		transports: ['websocket', 'polling'],
 	});
 
-	// Create dedicated Redis subscriber for pub/sub
-	const redisSubscriber = redisClient.duplicate
-		? redisClient.duplicate()
-		: redisClient; // fallback if duplicate unavailable
-
-	redisSubscriber.subscribe('location:updates');
-
-	redisSubscriber.on('message', (channel: string, message: string) => {
+	const handleLocationUpdate = (channel: string, message: string) => {
 		if (channel === 'location:updates') {
 			try {
 				const payload = JSON.parse(message);
-				// Broadcast to all connected clients
 				io.emit('location:update', payload);
 			} catch (err) {
 				logger.error('Socket Redis parse error:', err);
 			}
 		}
-	});
+	};
+
+	// ✅ Prevent duplicate subscription (safe way)
+
+
+	// if (!isSubscribed) {
+	// 	isSubscribed = true;
+	// 	await redisSubscriber.subscribe('location:updates');
+	// 	redisSubscriber.on('message', handleLocationUpdate);
+	// }
+	const subscribe = async () => {
+		if (isSubscribed) return;
+
+		isSubscribed = true;
+		await redisSubscriber.subscribe('location:updates');
+		redisSubscriber.off("message", handleLocationUpdate);
+		redisSubscriber.on('message', handleLocationUpdate);
+	};
+
+	// ✅ initial subscribe
+	await subscribe();
+
+	// ✅ reconnect safety
+	redisSubscriber.on('connect', subscribe);
 
 	io.on('connection', async (socket: Socket) => {
 		logger.info(`⚡ Socket connected: ${socket.id}`);
 
-		// Feature 4: Emit latest all-user locations immediately on connect
 		try {
-			const latestLocations = await LocationService.getAllUsersLatestLocation();
+			const latestLocations =
+				await LocationService.getAllUsersLatestLocation();
+
 			socket.emit('location:latest-all', {
 				timestamp: new Date().toISOString(),
 				count: latestLocations.length,
 				users: latestLocations,
 			});
+
 		} catch (err) {
 			logger.error('Socket initial emit error:', err);
-			socket.emit('location:error', { message: 'Failed to fetch latest locations' });
+			socket.emit('location:error', {
+				message: 'Failed to fetch latest locations',
+			});
 		}
 
 		socket.on('disconnect', () => {
@@ -56,10 +78,5 @@ export const initializeSocketIO = (server: HttpServer): SocketIOServer => {
 		});
 	});
 
-	return io;
-};
-
-export const getIO = (): SocketIOServer => {
-	if (!io) throw new Error('Socket.io not initialized!');
 	return io;
 };

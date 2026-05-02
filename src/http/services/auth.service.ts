@@ -52,21 +52,24 @@ export class AuthService {
 		const validPassword = await bcrypt.compare(password, user.password);
 		if (!validPassword) throw new HttpException(401, 'Invalid credentials');
 
+		if (user.role !== 'admin') {
+			const devices = await DeviceRepository.findByUserId(user.id, transaction);
 
-		const devices = await DeviceRepository.findByUserId(user.id, transaction);
-		logger.info('devices: ', devices);
-		if (devices.length === 0 || devices[0].fingerprint !== fingerPrint) {
-			throw new HttpException(401, 'Device  verification failed');
-		}
+			logger.info('devices: ', devices);
+			if (devices.length === 0 || devices[0].fingerprint !== fingerPrint) {
+				throw new HttpException(401, 'Device  verification failed');
+			}
 
 
-		// Device verification
 
-		if (devices.length === 0) throw new HttpException(401, 'Device not registered. Please register your device first.');
+			// Device verification
 
-		const device = devices[0];
-		if (device.android_id !== androidId) {
-			throw new HttpException(401, 'Device verification failed - Android ID mismatch');
+			if (devices.length === 0) throw new HttpException(401, 'Device not registered. Please register your device first.');
+
+			const device = devices[0];
+			if (device.android_id !== androidId) {
+				throw new HttpException(401, 'Device verification failed - Android ID mismatch');
+			}
 		}
 
 		const accessToken = generateAccessToken({ userId: user.id, role: user.role, fullName: user.full_name, email: user.email });

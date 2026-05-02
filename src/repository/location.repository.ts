@@ -1,5 +1,5 @@
-import { sequelize } from '@/config/dbConfig';
 import { QueryTypes, Transaction } from 'sequelize';
+import { sequelize } from '../config/dbConfig';
 import { UtilsMain } from '../utils';
 import { executeQuery } from '../utils/executeQuery.util';
 
@@ -9,7 +9,7 @@ export class LocationRepository {
 		isInside: boolean; distance: number | null;
 		recordedAt: Date; logType?: string;
 	}, transaction?: any) {
-		return executeQuery({
+		return await executeQuery({
 			query: `
         INSERT INTO locations
           (id, user_id, latitude, longitude, is_inside, distance, recorded_at, log_type)
@@ -58,6 +58,15 @@ export class LocationRepository {
 
 		const startIST = UtilsMain.getDateInIST(start);
 		const endIST = UtilsMain.getDateInIST(end);
+
+		console.log("startDate, endDate >>>> ", {
+			startDate,
+			endDate,
+			offset,
+			limit,
+			search,
+			userId,
+		});
 
 		const searchCondition = search
 			? `   AND (l.user_id = :userId AND (l.full_name ILIKE :search OR l.email ILIKE :search)) `
@@ -128,6 +137,7 @@ export class LocationRepository {
 				transaction,
 			});
 		} else {
+			console.log("query >>>> ", query);
 			rows = await sequelize.query(query, {
 				replacements,
 				type: QueryTypes.SELECT,
@@ -135,6 +145,8 @@ export class LocationRepository {
 			});
 		}
 
+
+		console.log("rows 139 >>>> ", rows);
 
 
 
@@ -147,7 +159,9 @@ export class LocationRepository {
 			});
 		}
 
-		const total = userId ? null : Number(countResult[0].total);
+		console.log("countResult >>> ", countResult);
+
+		const total = userId ? null : Number(countResult?.[0]?.total || 0);
 
 		return {
 			data: rows,

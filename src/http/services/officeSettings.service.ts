@@ -4,6 +4,7 @@ import { redisClient } from '../../config/redis.config';
 import { OfficeSettingsRepository } from '../../repository/officeSettings.repository';
 import { OfficeConfig, WorkingHours } from '../../types';
 import { OFFICE_CONFIG_KEY } from '../../utils/constants.util';
+import { logger } from '../../utils/logger';
 import { HttpException } from '../exceptions/http.exceptions';
 
 
@@ -16,7 +17,7 @@ export class OfficeSettingsService {
 
 		if (cachedRedisConfig) {
 			result = JSON.parse(cachedRedisConfig);
-			console.log('result: ', result);
+			logger.info('result: ', result);
 		} else {
 			result = await OfficeSettingsRepository.getConfig(transaction);
 			if (result?.length === 0) {
@@ -33,7 +34,7 @@ export class OfficeSettingsService {
 			result ? JSON.parse(JSON.stringify(result)) : null;
 
 
-		console.log("office >>> ", office);
+		logger.info("office >>> ", office);
 
 		if (!office) {
 			throw new HttpException(400, 'Office configuration not found');

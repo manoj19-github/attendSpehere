@@ -3,7 +3,7 @@ import { executeQuery } from '../utils/executeQuery.util';
 
 export class UserRepository {
 	static async create(data: { fullName: string; email: string; password: string; role: string }, transaction?: any) {
-		return executeQuery({
+		return await executeQuery({
 			query: `
         INSERT INTO users (id, full_name, email, password, role)
         VALUES (gen_random_uuid(), :fullName, :email, :password, :role)
@@ -16,7 +16,7 @@ export class UserRepository {
 	}
 
 	static async findByEmail(email: string, transaction?: Transaction) {
-		return executeQuery<any[]>({
+		return await executeQuery<any[]>({
 			query: `SELECT * FROM users WHERE email = :email LIMIT 1`,
 			replacements: { email },
 			type: QueryTypes.SELECT,
@@ -25,7 +25,7 @@ export class UserRepository {
 	}
 
 	static async findById(id: string) {
-		return executeQuery<any[]>({
+		return await executeQuery<any[]>({
 			query: `SELECT id, full_name, email, role, created_at FROM users WHERE id = :id LIMIT 1`,
 			replacements: { id },
 			type: QueryTypes.SELECT
@@ -33,16 +33,19 @@ export class UserRepository {
 	}
 
 	static async findAllBasic(
-		page: number = 1,
-		limit: number = 10,
-		search?: string,
-		transaction?: Transaction
+		{ page = 1, limit = 10, search, transaction }:
+			{
+				page: number;
+				limit: number;
+				search?: string,
+				transaction?: Transaction
+			}
 	) {
 		const offset = (page - 1) * limit;
 
 		// 🔍 Search condition
 		const searchCondition = search
-			? `WHERE (u.full_name ILIKE :search OR u.email ILIKE :search)`
+			? ` AND  (u.full_name ILIKE :search OR u.email ILIKE :search)`
 			: '';
 
 
@@ -64,6 +67,8 @@ export class UserRepository {
 
   FROM users u
 
+	WHERE u.role != 'admin'
+
   ${searchCondition}
 
   ORDER BY u.created_at DESC
@@ -74,6 +79,7 @@ export class UserRepository {
 		const countQuery = `
     SELECT COUNT(*) as total
     FROM users u
+		WHERE u.role != 'admin'
     ${searchCondition}
   `;
 
@@ -86,13 +92,13 @@ export class UserRepository {
 			replacements.search = `%${search}%`; // 🔥 partial match
 		}
 
-		const data = executeQuery<any[]>({
+		const data = await executeQuery<any[]>({
 			query, replacements,
 			type: QueryTypes.SELECT,
 			transaction
 		});
 
-		const countResult: any = executeQuery<any[]>({
+		const countResult: any = await executeQuery<any[]>({
 			query: countQuery,
 			replacements,
 			type: QueryTypes.SELECT,
@@ -113,7 +119,7 @@ export class UserRepository {
 	}
 
 	static async countAll() {
-		return executeQuery<{ count: string }[]>({
+		return await executeQuery<{ count: string }[]>({
 			query: `SELECT COUNT(*) as count FROM users`,
 			type: QueryTypes.SELECT
 		});

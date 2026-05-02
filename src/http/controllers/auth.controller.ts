@@ -74,6 +74,9 @@ export class AuthController {
 			transaction = await sequelize.transaction();
 			const { email, password, androidId, fingerPrint } = req.body;
 
+			console.log("email, password, androidId, fingerPrint  >>> ", { email, password, androidId, fingerPrint });
+
+
 			if (!email || !androidId) {
 				return res.status(400).json({
 					success: false,

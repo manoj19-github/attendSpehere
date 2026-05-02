@@ -4,8 +4,8 @@ import { redisClient, redisPublisher } from "../../config/redis.config";
 import { AttendanceRepository } from "../../repository/attendance.repository";
 import { LocationRepository } from "../../repository/location.repository";
 import { RedisUserState } from "../../types";
+import { INACTIVE_THRESHOLD } from "../../utils/constants.util";
 import { calculateHaversineDistance } from "../../utils/hervesin.util";
-import { logger } from "../../utils/logger";
 import { isWithinWorkingHours } from "../../utils/workingHours.util";
 import { HttpException } from "../exceptions/http.exceptions";
 import { OfficeSettingsService } from "./officeSettings.service";
@@ -100,18 +100,27 @@ export class LocationService {
 		 🚀 MAIN SERVICE
 	========================================================== */
 
-	static async processPing(userId: string, lat: number, lng: number, fullName?: string, email?: string) {
+
+	static async processPing(
+		userId: string,
+		lat: number,
+		lng: number,
+		fullName?: string,
+		email?: string
+	) {
 		const transaction = await sequelize.transaction();
 		const redisKey = `user:${userId}`;
 		const now = new Date();
 		const today = this.getToday();
 
-
-
 		try {
 			const officeConfig = await OfficeSettingsService.getConfig();
+
 			const distance = calculateHaversineDistance(
-				lat, lng, officeConfig.OFFICE_LAT, officeConfig.OFFICE_LNG
+				lat,
+				lng,
+				officeConfig.OFFICE_LAT,
+				officeConfig.OFFICE_LNG
 			);
 
 			const redisData = await redisClient.get(redisKey);
@@ -122,27 +131,35 @@ export class LocationService {
 					status: 'out_office_area',
 					lastDistanceMark: 0,
 					lastIntervalTime: null,
+					lastEmitTime: null,
 					currentLat: lat,
 					currentLng: lng,
 					lastCheckinDate: null,
-					fullName: fullName,
-					email: email
+					fullName,
+					email,
+					lastSeen: null
 				};
 
+			const prevLat = state.currentLat;
+			const prevLng = state.currentLng;
+
+			// ✅ update state
 			state.currentLat = lat;
 			state.currentLng = lng;
 			state.fullName = fullName;
 			state.email = email;
+			state.lastSeen = now.toISOString(); // ⭐ IMPORTANT
+
+			const movement = calculateHaversineDistance(prevLat, prevLng, lat, lng);
 
 			const firstCheckinDone = state.lastCheckinDate === today;
-			logger.info("distance >>> 125 >> ", distance);
-			logger.info("distance >>> 125 >> ", distance);
 			const isInside = distance <= officeConfig.OFFICE_RADIUS;
 			const isWorkingHours = isWithinWorkingHours(now);
 
 			let locationLogged = false;
 			let attendanceEvent: 'checkin' | 'checkout' | null = null;
 
+			/* ================= OUTSIDE WORKING HOURS ================= */
 			if (!isWorkingHours) {
 				await redisClient.set(redisKey, JSON.stringify(state));
 				await transaction.commit();
@@ -152,30 +169,31 @@ export class LocationService {
 					status: state.status,
 					isWorkingHours,
 					attendanceEvent: null,
-					totalHours: await this.calculateWorkingHours(userId)
+					totalHours: await this.calculateWorkingHours(userId),
 				};
 			}
 
 			/* ================= INSIDE ================= */
 			if (isInside) {
 				if (state.status !== 'in_office_area') {
-					if (firstCheckinDone) {
-						// AUTO CHECKIN
-						await AttendanceRepository.insertEvent({
-							userId,
-							eventDate: today,
-							eventType: 'checkin',
-							latitude: lat,
-							longitude: lng,
-							distance,
-							timestampEvent: now
-						}, transaction);
+					if (!firstCheckinDone) {
+						await AttendanceRepository.insertEvent(
+							{
+								userId,
+								eventDate: today,
+								eventType: 'checkin',
+								timestampEvent: now,
+								latitude: lat,
+								longitude: lng,
+								distance,
+							},
+							transaction
+						);
 
 						await this.addEventToRedis(userId, 'checkin', now);
 
 						state.lastCheckinDate = today;
 						attendanceEvent = 'checkin';
-						locationLogged = true;
 					}
 
 					state.status = 'in_office_area';
@@ -190,15 +208,18 @@ export class LocationService {
 				if (state.status === 'in_office_area') {
 					const checkoutDate = state.lastCheckinDate || today;
 
-					await AttendanceRepository.insertEvent({
-						userId,
-						eventDate: checkoutDate,
-						eventType: 'checkout',
-						timestampEvent: now,
-						latitude: lat,
-						longitude: lng,
-						distance: distance,
-					}, transaction);
+					await AttendanceRepository.insertEvent(
+						{
+							userId,
+							eventDate: checkoutDate,
+							eventType: 'checkout',
+							timestampEvent: now,
+							latitude: lat,
+							longitude: lng,
+							distance,
+						},
+						transaction
+					);
 
 					await this.addEventToRedis(userId, 'checkout', now);
 
@@ -206,23 +227,24 @@ export class LocationService {
 				}
 
 				state.status = 'out_office_area';
-				state.fullName = fullName;
-				state.email = email;
 
 				const currentMark =
 					Math.floor(distance / officeConfig.DISTANCE_THRESHOLD) *
 					officeConfig.DISTANCE_THRESHOLD;
 
 				if (currentMark > state.lastDistanceMark) {
-					await LocationRepository.create({
-						userId,
-						latitude: lat,
-						longitude: lng,
-						isInside: false,
-						distance,
-						recordedAt: now,
-						logType: 'distance'
-					}, transaction);
+					await LocationRepository.create(
+						{
+							userId,
+							latitude: lat,
+							longitude: lng,
+							isInside: false,
+							distance,
+							recordedAt: now,
+							logType: 'distance',
+						},
+						transaction
+					);
 
 					state.lastDistanceMark = currentMark;
 					locationLogged = true;
@@ -234,18 +256,22 @@ export class LocationService {
 
 				const shouldLogByTime =
 					!lastInterval ||
-					now.getTime() - lastInterval.getTime() >= officeConfig.TIME_INTERVAL_MS;
+					now.getTime() - lastInterval.getTime() >=
+					officeConfig.TIME_INTERVAL_MS;
 
 				if (shouldLogByTime && !locationLogged) {
-					await LocationRepository.create({
-						userId,
-						latitude: lat,
-						longitude: lng,
-						isInside: false,
-						distance,
-						recordedAt: now,
-						logType: 'interval'
-					}, transaction);
+					await LocationRepository.create(
+						{
+							userId,
+							latitude: lat,
+							longitude: lng,
+							isInside: false,
+							distance,
+							recordedAt: now,
+							logType: 'interval',
+						},
+						transaction
+					);
 
 					locationLogged = true;
 				}
@@ -256,22 +282,47 @@ export class LocationService {
 			}
 
 			await transaction.commit();
-			await redisClient.set(redisKey, JSON.stringify(state));
 
 			const totalHours = await this.calculateWorkingHours(userId);
 
-			redisPublisher.publish('location:updates', JSON.stringify({
-				userId,
-				lat,
-				lng,
-				status: state.status,
-				distance,
-				attendanceEvent,
-				totalHours,
-				timestamp: now.toISOString(),
-				fullName: fullName,
-				email: email
-			}));
+			/* ================= SOCKET EMIT ================= */
+
+			const lastEmit = state.lastEmitTime
+				? new Date(state.lastEmitTime)
+				: null;
+
+			const shouldEmitByTime =
+				!lastEmit || now.getTime() - lastEmit.getTime() > 10000;
+
+			const SHOULD_EMIT =
+				movement > 5 || attendanceEvent !== null;
+
+			if (SHOULD_EMIT && shouldEmitByTime) {
+				await redisPublisher.publish(
+					'location:updates',
+					JSON.stringify({
+						userId,
+						lat,
+						lng,
+						status: state.status,
+						distance,
+						attendanceEvent,
+						totalHours,
+						timestamp: now.toISOString(),
+						fullName,
+						email,
+						lastSeen: state.lastSeen,
+						lastEmitTime: state.lastEmitTime,
+						lastIntervalTime: state.lastIntervalTime
+
+					})
+				);
+
+				state.lastEmitTime = now.toISOString();
+			}
+
+			// ✅ SINGLE REDIS WRITE
+			await redisClient.set(redisKey, JSON.stringify(state));
 
 			return {
 				distance: Math.round(distance * 100) / 100,
@@ -279,23 +330,20 @@ export class LocationService {
 				isWorkingHours,
 				attendanceEvent,
 				firstCheckinDone,
+				lastSeen: state.lastSeen,
+				lastEmitTime: state.lastEmitTime,
+				lastIntervalTime: state.lastIntervalTime,
 				totalHours,
 				officeLocation: {
 					lat: officeConfig.OFFICE_LAT,
-					lng: officeConfig.OFFICE_LNG
-				}
+					lng: officeConfig.OFFICE_LNG,
+				},
 			};
-
 		} catch (error) {
 			await transaction.rollback();
 			throw error;
 		}
 	}
-
-	/* ==========================================================
-		 ✋ MANUAL CHECKIN
-	========================================================== */
-
 	static async manualCheckin(userId: string, lat: number, lng: number, fullName?: string, email?: string) {
 		const transaction = await sequelize.transaction();
 		const redisKey = `user:${userId}`;
@@ -444,44 +492,71 @@ export class LocationService {
 
 		}
 	}
+
 	static async getAllUsersLatestLocation() {
-
-
 		try {
+			const users: any[] = [];
+			let cursor = '0';
 
 
-			// Fetch Redis states
-			const redisKeys = await redisClient.keys('user:*');
-			const redisMap = new Map<string, any>();
+			const now = Date.now();
 
-			for (const key of redisKeys) {
-				const raw = await redisClient.get(key);
-				if (!raw) continue;
+			do {
+				const [nextCursor, keys] = await redisClient.scan(
+					cursor,
+					'MATCH',
+					'user:*',
+					'COUNT',
+					50
+				);
 
-				const state = JSON.parse(raw);
-				const userId = key.replace('user:', '');
+				cursor = nextCursor;
 
-				redisMap.set(userId, {
-					userId,
-					...state,
-					latitude: state.currentLat,
-					longitude: state.currentLng,
-					status: state.status,
-					recordedAt: state.lastIntervalTime
-						? new Date(state.lastIntervalTime)
-						: new Date(),
-					source: 'redis',
-				});
-			}
+				if (keys.length === 0) continue;
 
+				const values = await redisClient.mget(keys);
 
+				for (let i = 0; i < values.length; i++) {
+					const raw = values[i];
+					if (!raw) continue;
+
+					try {
+						const state = JSON.parse(raw);
+
+						const lastSeen = state.lastSeen
+							? new Date(state.lastSeen).getTime()
+							: 0;
+
+						const isActive = now - lastSeen <= INACTIVE_THRESHOLD;
+
+						if (!isActive) continue; // ❌ skip inactive user
+
+						const userId = keys[i].replace('user:', '');
+
+						users.push({
+							userId,
+							latitude: state.currentLat,
+							longitude: state.currentLng,
+							status: state.status,
+							recordedAt: state.lastSeen,
+							fullName: state.fullName,
+							email: state.email,
+							source: 'redis',
+						});
+
+					} catch {
+						console.warn('Invalid JSON:', keys[i]);
+					}
+				}
+
+			} while (cursor !== '0');
+
+			return users;
 
 		} catch (error) {
-
 			throw error;
 		}
 	}
-
 
 	/**
 	 * ✅ NEW: Get user's raw GPS location history

@@ -1,3 +1,5 @@
+import { Transaction } from "sequelize";
+import * as XLSX from 'xlsx';
 import { AttendanceRepository } from "../../repository/attendance.repository";
 
 
@@ -42,4 +44,30 @@ export class AttendanceService {
 	static async getReport(userId: string, startDate: string, endDate: string) {
 		return AttendanceRepository.getWorkingHoursByUser(userId, startDate, endDate);
 	}
+	static async getPaginatedAttendanceWithUser({ page, limit, search, hoursFilter, transaction }: { page: number, limit: number, search?: string, hoursFilter?: 'below_8' | 'above_8', transaction?: Transaction }) {
+		return AttendanceRepository.paginatatedAttandanceQueryOfUsers({
+			page,
+			limit,
+			search,
+			hoursFilter,
+			transaction
+		});
+	}
+	static async generateMISReport(startDate: string, endDate: string) {
+		const reportData = await AttendanceRepository.getAllWorkingHours(startDate, endDate);
+
+		const worksheet = XLSX.utils.json_to_sheet(reportData.map((row: any) => ({
+			'Employee ID': row.user_id,
+			'Employee Name': row.full_name,
+			'Date': row.event_date,
+			'Working Hours': row.working_hours
+		})));
+
+		const workbook = XLSX.utils.book_new();
+		XLSX.utils.book_append_sheet(workbook, worksheet, 'MIS Report');
+
+		return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+	}
+
+
 }

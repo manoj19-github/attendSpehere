@@ -7,7 +7,7 @@ export class OfficeSettingsRepository {
 	 * Get full office config (all columns)
 	 */
 	static async getConfig(transaction?: any) {
-		return executeQuery<any>({
+		return await executeQuery<any>({
 			query: `
         SELECT
   id,
@@ -36,7 +36,7 @@ LIMIT 1
 	 * Get only location config
 	 */
 	static async getLocation(transaction?: any) {
-		return executeQuery<any>({
+		return await executeQuery<any>({
 			query: `
         SELECT
           lat,
@@ -53,7 +53,7 @@ LIMIT 1
 	 * Get working hours config
 	 */
 	static async getWorkingHours(transaction?: any) {
-		return executeQuery<any>({
+		return await executeQuery<any>({
 			query: `
         SELECT
           working_start,
@@ -71,7 +71,7 @@ LIMIT 1
 	 * Get polling interval
 	 */
 	static async getPollingInterval(transaction?: any) {
-		return executeQuery<any>({
+		return await executeQuery<any>({
 			query: `
         SELECT
           polling_interval
@@ -99,7 +99,7 @@ LIMIT 1
 		distanceThreshold: number;
 		timeIntervalMs: number;
 	}, transaction?: any) {
-		return executeQuery({
+		return await executeQuery({
 			query: `
       UPDATE office_settings
       SET
@@ -134,7 +134,7 @@ LIMIT 1
 		lng: number;
 		radius: number;
 	}, transaction?: any) {
-		return executeQuery({
+		return await executeQuery({
 			query: `
         UPDATE office_settings
         SET
@@ -158,7 +158,7 @@ LIMIT 1
 		workingDays: number[];
 
 	}, transaction?: any) {
-		return executeQuery({
+		return await executeQuery({
 			query: `
         UPDATE office_settings
         SET

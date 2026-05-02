@@ -38,4 +38,6 @@ export interface RedisUserState {
 	lastCheckinDate: string | null;
 	fullName?: string;
 	email?: string;
+	lastEmitTime?: string;
+	lastSeen?: string;
 }
