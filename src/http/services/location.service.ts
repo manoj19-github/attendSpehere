@@ -3,20 +3,13 @@ import { sequelize } from "../../config/dbConfig";
 import { redisClient, redisPublisher } from "../../config/redis.config";
 import { AttendanceRepository } from "../../repository/attendance.repository";
 import { LocationRepository } from "../../repository/location.repository";
+import { RedisUserState } from "../../types";
 import { calculateHaversineDistance } from "../../utils/hervesin.util";
 import { logger } from "../../utils/logger";
 import { isWithinWorkingHours } from "../../utils/workingHours.util";
 import { HttpException } from "../exceptions/http.exceptions";
 import { OfficeSettingsService } from "./officeSettings.service";
 
-interface RedisUserState {
-	status: 'in_office_area' | 'out_office_area';
-	lastDistanceMark: number;
-	lastIntervalTime: string | null;
-	currentLat: number;
-	currentLng: number;
-	lastCheckinDate: string | null;
-}
 
 export class LocationService {
 
@@ -107,7 +100,7 @@ export class LocationService {
 		 🚀 MAIN SERVICE
 	========================================================== */
 
-	static async processPing(userId: string, lat: number, lng: number) {
+	static async processPing(userId: string, lat: number, lng: number, fullName?: string, email?: string) {
 		const transaction = await sequelize.transaction();
 		const redisKey = `user:${userId}`;
 		const now = new Date();
@@ -131,11 +124,15 @@ export class LocationService {
 					lastIntervalTime: null,
 					currentLat: lat,
 					currentLng: lng,
-					lastCheckinDate: null
+					lastCheckinDate: null,
+					fullName: fullName,
+					email: email
 				};
 
 			state.currentLat = lat;
 			state.currentLng = lng;
+			state.fullName = fullName;
+			state.email = email;
 
 			const firstCheckinDone = state.lastCheckinDate === today;
 			logger.info("distance >>> 125 >> ", distance);
@@ -209,6 +206,8 @@ export class LocationService {
 				}
 
 				state.status = 'out_office_area';
+				state.fullName = fullName;
+				state.email = email;
 
 				const currentMark =
 					Math.floor(distance / officeConfig.DISTANCE_THRESHOLD) *
@@ -269,7 +268,9 @@ export class LocationService {
 				distance,
 				attendanceEvent,
 				totalHours,
-				timestamp: now.toISOString()
+				timestamp: now.toISOString(),
+				fullName: fullName,
+				email: email
 			}));
 
 			return {
@@ -295,7 +296,7 @@ export class LocationService {
 		 ✋ MANUAL CHECKIN
 	========================================================== */
 
-	static async manualCheckin(userId: string, lat: number, lng: number) {
+	static async manualCheckin(userId: string, lat: number, lng: number, fullName?: string, email?: string) {
 		const transaction = await sequelize.transaction();
 		const redisKey = `user:${userId}`;
 		const now = new Date();
@@ -333,13 +334,17 @@ export class LocationService {
 					lastIntervalTime: null,
 					currentLat: lat,
 					currentLng: lng,
-					lastCheckinDate: null
+					lastCheckinDate: null,
+					fullName: fullName,
+					email: email
 				};
 
 			state.status = 'in_office_area';
 			state.lastCheckinDate = today;
 			state.currentLat = lat;
 			state.currentLng = lng;
+			state.fullName = fullName;
+			state.email = email;
 
 			await transaction.commit();
 			await redisClient.set(redisKey, JSON.stringify(state));
@@ -358,7 +363,9 @@ export class LocationService {
 	static async manualCheckout(
 		userId: string,
 		lat: number,
-		lng: number
+		lng: number,
+		fullName?: string,
+		email?: string
 	) {
 		let transaction: Transaction | undefined;
 		try {
@@ -411,13 +418,18 @@ export class LocationService {
 					lastIntervalTime: null,
 					currentLat: lat,
 					currentLng: lng,
+
 					lastCheckinDate: null,
+					fullName: fullName,
+					email: email
 				};
 
 			state.status = 'out_office_area';
 			state.currentLat = lat ?? 0;
 			state.currentLng = lng ?? 0;
 			state.lastDistanceMark = distance
+			state.fullName = fullName;
+			state.email = email;
 
 			await transaction.commit();
 			await redisClient.set(redisKey, JSON.stringify(state));
@@ -432,4 +444,53 @@ export class LocationService {
 
 		}
 	}
+	static async getAllUsersLatestLocation() {
+
+
+		try {
+
+
+			// Fetch Redis states
+			const redisKeys = await redisClient.keys('user:*');
+			const redisMap = new Map<string, any>();
+
+			for (const key of redisKeys) {
+				const raw = await redisClient.get(key);
+				if (!raw) continue;
+
+				const state = JSON.parse(raw);
+				const userId = key.replace('user:', '');
+
+				redisMap.set(userId, {
+					userId,
+					...state,
+					latitude: state.currentLat,
+					longitude: state.currentLng,
+					status: state.status,
+					recordedAt: state.lastIntervalTime
+						? new Date(state.lastIntervalTime)
+						: new Date(),
+					source: 'redis',
+				});
+			}
+
+
+
+		} catch (error) {
+
+			throw error;
+		}
+	}
+
+
+	/**
+	 * ✅ NEW: Get user's raw GPS location history
+	 */
+	static async getUserLocationHistory({ userId, startDate, endDate, page, limit, search }: { userId?: string, startDate: string, endDate: string, page: number; limit: number; search?: string }) {
+		return LocationRepository.findLocationByDateRange({ userId, startDate, endDate, page, search, limit });
+	}
+
+
+
+
 }

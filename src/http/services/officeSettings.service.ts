@@ -16,6 +16,7 @@ export class OfficeSettingsService {
 
 		if (cachedRedisConfig) {
 			result = JSON.parse(cachedRedisConfig);
+			console.log('result: ', result);
 		} else {
 			result = await OfficeSettingsRepository.getConfig(transaction);
 			if (result?.length === 0) {
@@ -30,6 +31,9 @@ export class OfficeSettingsService {
 		const office = Array.isArray(result) && result.length > 0 ?
 			JSON.parse(JSON.stringify(result[0])) :
 			result ? JSON.parse(JSON.stringify(result)) : null;
+
+
+		console.log("office >>> ", office);
 
 		if (!office) {
 			throw new HttpException(400, 'Office configuration not found');

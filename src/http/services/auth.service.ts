@@ -69,7 +69,7 @@ export class AuthService {
 			throw new HttpException(401, 'Device verification failed - Android ID mismatch');
 		}
 
-		const accessToken = generateAccessToken({ userId: user.id, role: user.role, fullName: user.full_name });
+		const accessToken = generateAccessToken({ userId: user.id, role: user.role, fullName: user.full_name, email: user.email });
 		const refreshToken = generateRefreshToken({ userId: user.id });
 		const officeSettings = await OfficeSettingsService.getConfig(transaction);
 
@@ -92,7 +92,7 @@ export class AuthService {
 		const users = await UserRepository.findById(decoded.userId);
 		if (users.length === 0) throw new HttpException(401, 'User not found');
 
-		const accessToken = generateAccessToken({ userId: users[0].id, role: users[0].role, fullName: users[0].full_name });
+		const accessToken = generateAccessToken({ userId: users[0].id, role: users[0].role, fullName: users[0].full_name, email: users[0].email });
 		return { accessToken };
 	}
 }

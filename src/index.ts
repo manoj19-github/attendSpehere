@@ -21,6 +21,8 @@ import { errorHandler, notFound } from "./http/middlewares/errorHandler.middlewa
 
 
 
+import { createServer } from "http";
+import { initializeSocketIO } from "./config/socket.config";
 import RoutesMain from "./routes";
 import { UtilsMain } from "./utils";
 import { logger } from "./utils/logger";
@@ -40,11 +42,13 @@ class ExpressApp {
 	private app: Application;
 	private PORT: number;
 	private routesMain = new RoutesMain();
+	private httpServer: ReturnType<typeof createServer>;
 
 	constructor() {
 
 		this.app = express();
 		this.PORT = process.env.PORT ? Number(process.env.PORT) : 5000;
+		this.httpServer = createServer(this.app);
 
 		this.middleware();
 		this.routes();
@@ -52,6 +56,7 @@ class ExpressApp {
 
 	private middleware(): void {
 		this.app.use(cookieParser());
+		initializeSocketIO(this.httpServer);
 
 		this.app.use(
 			cors({
@@ -114,7 +119,7 @@ class ExpressApp {
 
 
 		// ✅ Start server
-		this.app.listen(this.PORT, "0.0.0.0", () => {
+		this.httpServer.listen(this.PORT, "0.0.0.0", () => {
 			logger.info(`🚀 Server running 	on port:${this.PORT}`);
 			connectDB().then(() => {
 				UtilsMain.loadOfficeConfigToCache()

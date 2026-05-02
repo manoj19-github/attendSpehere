@@ -25,8 +25,5 @@ export class AttendanceRoutes implements Routes {
 		this.router.get(`${this.path}/history`, authenticate, AttendanceController.getHistory);
 
 		this.router.get(`${this.path}/today`, authenticate, AttendanceController.getToday);
-
-
-		this.router.get(`${this.path}/report`, authenticate, AttendanceController.getReport);
 	}
 }

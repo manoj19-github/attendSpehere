@@ -1,4 +1,5 @@
 import { registerDecorator, ValidationOptions } from 'class-validator';
+import { HttpException } from '../http/exceptions/http.exceptions';
 import { OfficeSettingsService } from '../http/services/officeSettings.service';
 import { logger } from './logger';
 export class UtilsMain {
@@ -76,7 +77,7 @@ export const getMatchStatus = (
 
 	// ❌ invalid date guard
 	if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-		throw new Error('Invalid date provided to getMatchStatus');
+		throw new HttpException(400, 'Invalid date provided to getMatchStatus');
 	}
 
 	if (now < start) {

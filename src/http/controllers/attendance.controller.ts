@@ -24,6 +24,7 @@ export class AttendanceController {
 		}
 	}
 
+
 	static async getToday(req: Request, res: Response, next: NextFunction) {
 		try {
 			const userId = req.user!.userId;
@@ -40,22 +41,5 @@ export class AttendanceController {
 		}
 	}
 
-	static async getReport(req: Request, res: Response, next: NextFunction) {
-		try {
-			const userId = req.user!.userId;
-			const { startDate, endDate } = req.query as { startDate: string; endDate: string };
 
-			if (!startDate || !endDate) {
-				return res.status(400).json({
-					success: false,
-					message: 'startDate and endDate are required'
-				});
-			}
-
-			const data = await AttendanceService.getReport(userId, startDate, endDate);
-			return res.status(200).json({ success: true, data });
-		} catch (error) {
-			next(error);
-		}
-	}
 }

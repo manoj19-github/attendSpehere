@@ -26,3 +26,16 @@ export interface OfficeConfig {
 		days: number[];
 	};
 }
+
+
+
+export interface RedisUserState {
+	status: 'in_office_area' | 'out_office_area';
+	lastDistanceMark: number;
+	lastIntervalTime: string | null;
+	currentLat: number;
+	currentLng: number;
+	lastCheckinDate: string | null;
+	fullName?: string;
+	email?: string;
+}

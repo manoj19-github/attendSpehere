@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { OfficeSettingsController } from '../http/controllers/officeSettings.controller';
-import { authenticate } from '../http/middlewares/auth.middleware';
+import { authenticate, authorizeAdmin } from '../http/middlewares/auth.middleware';
 import { Routes } from '../interfaces/routes.interface';
 
 /**
@@ -25,6 +25,6 @@ export class OfficeSettingsRoutes implements Routes {
 		this.router.get(`${this.path}`, authenticate, OfficeSettingsController.getConfig);
 
 
-		this.router.put(`${this.path}`, authenticate, OfficeSettingsController.updateConfig);
+		this.router.put(`${this.path}`, authenticate, authorizeAdmin, OfficeSettingsController.updateConfig);
 	}
 }

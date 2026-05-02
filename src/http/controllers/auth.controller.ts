@@ -51,6 +51,7 @@ export class AuthController {
 				});
 			}
 			const officeSettings = await OfficeSettingsService.getConfig(transaction);
+			console.log('officeSettings: ', officeSettings);
 			transaction.commit();
 
 			return res.status(200).json({

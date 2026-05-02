@@ -8,7 +8,7 @@ import { LocationService } from '../services/location.service';
 export class LocationController {
 	static async ping(req: Request, res: Response, next: NextFunction) {
 		try {
-			const userId = req.user!.userId;
+			const { userId, fullName, email } = req.user;
 			const { lat, lng } = req.body;
 
 			if (lat === undefined || lng === undefined) {
@@ -19,7 +19,7 @@ export class LocationController {
 			}
 
 			const result = await LocationService.processPing(
-				userId, parseFloat(lat), parseFloat(lng)
+				userId, parseFloat(lat), parseFloat(lng), fullName, email
 			);
 
 			return res.status(200).json({ success: true, data: result });
@@ -68,4 +68,7 @@ export class LocationController {
 			next(error);
 		}
 	}
+
+
+
 }

@@ -24,10 +24,15 @@ export class AdminRoutes implements Routes {
 		this.router.get(`${this.path}/users`, authenticate, authorizeAdmin, AdminController.getUsers);
 
 
-		this.router.get(`${this.path}/user/:id/location-history`, authenticate, authorizeAdmin, AdminController.getUserLocationHistory);
+
+		this.router.get(`${this.path}/all-user-mis-report`, authenticate, authorizeAdmin, AdminController.downloadMISReport);
+		this.router.get(`${this.path}/all-user-latest-location`, authenticate, authorizeAdmin, AdminController.getAllUsersLatestLocation);
+		this.router.get(`${this.path}/all-user-attendance`, authenticate, authorizeAdmin, AdminController.getPaginatedAttendanceWithUser);
+		this.router.get(`${this.path}/all-user-location`, authenticate, authorizeAdmin, AdminController.getUserLocations);
 
 
-		this.router.get(`${this.path}/mis-report`, authenticate, authorizeAdmin, AdminController.downloadMISReport);
-		this.router.get(`${this.path}/user/:id/report`, authenticate, authorizeAdmin, AdminController.getUserReport);
+
+
+
 	}
 }

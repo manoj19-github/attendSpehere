@@ -32,17 +32,84 @@ export class UserRepository {
 		});
 	}
 
-	static async findAll(limit: number, offset: number) {
-		return executeQuery<any[]>({
-			query: `
-        SELECT id, full_name, email, role, created_at
-        FROM users
-        ORDER BY created_at DESC
-        LIMIT :limit OFFSET :offset
-      `,
-			replacements: { limit, offset },
-			type: QueryTypes.SELECT
+	static async findAllBasic(
+		page: number = 1,
+		limit: number = 10,
+		search?: string,
+		transaction?: Transaction
+	) {
+		const offset = (page - 1) * limit;
+
+		// 🔍 Search condition
+		const searchCondition = search
+			? `WHERE (u.full_name ILIKE :search OR u.email ILIKE :search)`
+			: '';
+
+
+		const query = `
+  SELECT
+    u.id,
+    u.full_name,
+    u.email,
+    u.role,
+    u.created_at,
+
+    EXISTS (
+      SELECT 1
+      FROM attendance a
+      WHERE a.user_id = u.id
+        AND a.event_date = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::date
+        AND a.event_type = 'checkin'
+    ) AS is_present
+
+  FROM users u
+
+  ${searchCondition}
+
+  ORDER BY u.created_at DESC
+  LIMIT :limit OFFSET :offset
+
+  `;
+
+		const countQuery = `
+    SELECT COUNT(*) as total
+    FROM users u
+    ${searchCondition}
+  `;
+
+		const replacements: any = {
+			limit,
+			offset,
+		};
+
+		if (search) {
+			replacements.search = `%${search}%`; // 🔥 partial match
+		}
+
+		const data = executeQuery<any[]>({
+			query, replacements,
+			type: QueryTypes.SELECT,
+			transaction
 		});
+
+		const countResult: any = executeQuery<any[]>({
+			query: countQuery,
+			replacements,
+			type: QueryTypes.SELECT,
+			transaction,
+		});
+
+		const total = Number(countResult[0].total);
+
+		return {
+			data,
+			pagination: {
+				total,
+				page,
+				limit,
+				totalPages: Math.ceil(total / limit),
+			},
+		};
 	}
 
 	static async countAll() {
