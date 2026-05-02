@@ -47,7 +47,7 @@ class ExpressApp {
 	constructor() {
 
 		this.app = express();
-		this.PORT = process.env.PORT ? Number(process.env.PORT) : 5000;
+		this.PORT = process.env.PORT ? Number(process.env.PORT) : 10000;
 		this.httpServer = createServer(this.app);
 
 		this.middleware();
