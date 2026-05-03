@@ -298,7 +298,7 @@ export class LocationService {
 				!lastEmit || now.getTime() - lastEmit.getTime() > 10000;
 
 			const SHOULD_EMIT =
-				movement > 5 || attendanceEvent !== null;
+				movement > 3 || attendanceEvent !== null;
 
 			if (SHOULD_EMIT && shouldEmitByTime) {
 				await redisPublisher.publish(
