@@ -148,6 +148,7 @@ export class LocationService {
 			state.currentLng = lng;
 			state.fullName = fullName;
 			state.email = email;
+			state.distance = distance;
 			state.lastSeen = now.toISOString(); // ⭐ IMPORTANT
 
 			const movement = calculateHaversineDistance(prevLat, prevLng, lat, lng);
@@ -300,7 +301,7 @@ export class LocationService {
 			const SHOULD_EMIT =
 				movement > 3 || attendanceEvent !== null;
 
-			if (SHOULD_EMIT && shouldEmitByTime) {
+			if (shouldEmitByTime) {
 				await redisPublisher.publish(
 					'location:updates',
 					JSON.stringify({

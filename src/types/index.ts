@@ -40,4 +40,5 @@ export interface RedisUserState {
 	email?: string;
 	lastEmitTime?: string;
 	lastSeen?: string;
+	distance?: number;
 }
