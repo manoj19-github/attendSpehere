@@ -921,3 +921,15 @@
 {"label":"database","level":"debug","message":"Executing (68bcecb5-2c0d-4beb-b7d8-54e908143f77): COMMIT;","timestamp":"2026-05-03 17:19:45"}
 {"label":"database","level":"debug","message":"Executing (f730693b-9638-4217-965e-d41675d4dbe8): START TRANSACTION;","timestamp":"2026-05-03 17:20:18"}
 {"label":"database","level":"debug","message":"Executing (f730693b-9638-4217-965e-d41675d4dbe8): COMMIT;","timestamp":"2026-05-03 17:20:18"}
+{"label":"database","level":"debug","message":"Executing (default): SELECT 1+1 AS result","timestamp":"2026-05-03 17:30:54"}
+{"label":"database","level":"debug","message":"Executing (default): SELECT id, full_name, email, role, created_at FROM users WHERE id = '9b1debb1-5e18-45f2-9a9b-2873d494a54b' LIMIT 1","timestamp":"2026-05-03 17:31:42"}
+{"label":"database","level":"debug","message":"Executing (2a979127-5f45-4a77-8026-e34eb8442bce): START TRANSACTION;","timestamp":"2026-05-03 17:31:43"}
+{"label":"database","level":"debug","message":"Executing (2a979127-5f45-4a77-8026-e34eb8442bce): COMMIT;","timestamp":"2026-05-03 17:31:43"}
+{"label":"database","level":"debug","message":"Executing (0c3de0f0-2d77-4b16-9c7e-1b1a90ca5086): START TRANSACTION;","timestamp":"2026-05-03 17:31:47"}
+{"label":"database","level":"debug","message":"Executing (0c3de0f0-2d77-4b16-9c7e-1b1a90ca5086): COMMIT;","timestamp":"2026-05-03 17:31:47"}
+{"label":"database","level":"debug","message":"Executing (default): SELECT id, event_type, timestamp_event, created_at\n        FROM attendance\n        WHERE user_id = '9b1debb1-5e18-45f2-9a9b-2873d494a54b'  AND   event_date = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::date\n        ORDER BY timestamp_event ASC","timestamp":"2026-05-03 17:31:47"}
+{"label":"database","level":"debug","message":"Executing (3a2afdb9-4e35-4ce8-9ba8-1aae83242a70): START TRANSACTION;","timestamp":"2026-05-03 17:31:51"}
+{"label":"database","level":"debug","message":"Executing (3a2afdb9-4e35-4ce8-9ba8-1aae83242a70): COMMIT;","timestamp":"2026-05-03 17:31:51"}
+{"label":"database","level":"debug","message":"Executing (default): SELECT id, event_type, timestamp_event, created_at\n        FROM attendance\n        WHERE user_id = '9b1debb1-5e18-45f2-9a9b-2873d494a54b'  AND   event_date = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::date\n        ORDER BY timestamp_event ASC","timestamp":"2026-05-03 17:31:52"}
+{"label":"database","level":"debug","message":"Executing (c543dabd-0895-4726-a214-1bc3cab299a8): START TRANSACTION;","timestamp":"2026-05-03 17:33:30"}
+{"label":"database","level":"debug","message":"Executing (c543dabd-0895-4726-a214-1bc3cab299a8): COMMIT;","timestamp":"2026-05-03 17:33:30"}
