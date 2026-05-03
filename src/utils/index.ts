@@ -18,9 +18,7 @@ export class UtilsMain {
 	};
 
 	static getDateInIST(date: Date): string {
-		return date.toLocaleDateString('en-CA', {
-			timeZone: 'Asia/Kolkata',
-		});
+		return date.toLocaleString('sv-SE', { timeZone: 'Asia/Kolkata' })
 	}
 
 }

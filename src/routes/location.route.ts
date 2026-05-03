@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { LocationController } from '../http/controllers/location.controller';
 import { authenticate } from '../http/middlewares/auth.middleware';
+import { authenticateRatelimiter } from '../http/middlewares/ratelimitMiddleware';
 import { Routes } from '../interfaces/routes.interface';
 
 
@@ -22,11 +23,11 @@ export class LocationRoutes implements Routes {
 
 	private initializeRoutes(): void {
 
-		this.router.post(`${this.path}/ping`, authenticate, LocationController.ping);
+		this.router.post(`${this.path}/ping`, authenticate, authenticateRatelimiter, LocationController.ping);
 
 
-		this.router.post(`${this.path}/checkin`, authenticate, LocationController.manualCheckin);
-		this.router.post(`${this.path}/checkout`, authenticate, LocationController.manualCheckout);
+		this.router.post(`${this.path}/checkin`, authenticate, authenticateRatelimiter, LocationController.manualCheckin);
+		this.router.post(`${this.path}/checkout`, authenticate, authenticateRatelimiter, LocationController.manualCheckout);
 
 
 	}

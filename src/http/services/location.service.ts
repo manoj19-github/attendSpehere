@@ -6,6 +6,7 @@ import { LocationRepository } from "../../repository/location.repository";
 import { RedisUserState } from "../../types";
 import { INACTIVE_THRESHOLD } from "../../utils/constants.util";
 import { calculateHaversineDistance } from "../../utils/hervesin.util";
+import { logger } from "../../utils/logger";
 import { isWithinWorkingHours } from "../../utils/workingHours.util";
 import { HttpException } from "../exceptions/http.exceptions";
 import { OfficeSettingsService } from "./officeSettings.service";
@@ -113,6 +114,8 @@ export class LocationService {
 		const now = new Date();
 		const today = this.getToday();
 
+
+
 		try {
 			const officeConfig = await OfficeSettingsService.getConfig();
 
@@ -122,6 +125,9 @@ export class LocationService {
 				officeConfig.OFFICE_LAT,
 				officeConfig.OFFICE_LNG
 			);
+
+			logger.info(`📍 User ${userId} is checking in at ${lat}, ${lng}`);
+			logger.info(`📍 Distance: ${distance}`);
 
 			const redisData = await redisClient.get(redisKey);
 
@@ -140,8 +146,8 @@ export class LocationService {
 					lastSeen: null
 				};
 
-			const prevLat = state.currentLat;
-			const prevLng = state.currentLng;
+			// const prevLat = state.currentLat;
+			// const prevLng = state.currentLng;
 
 			// ✅ update state
 			state.currentLat = lat;
@@ -151,7 +157,7 @@ export class LocationService {
 			state.distance = distance;
 			state.lastSeen = now.toISOString(); // ⭐ IMPORTANT
 
-			const movement = calculateHaversineDistance(prevLat, prevLng, lat, lng);
+			// const movement = calculateHaversineDistance(prevLat, prevLng, lat, lng);
 
 			const firstCheckinDone = state.lastCheckinDate === today;
 			const isInside = distance <= officeConfig.OFFICE_RADIUS;
@@ -212,23 +218,32 @@ export class LocationService {
 				if (state.status === 'in_office_area') {
 					const checkoutDate = state.lastCheckinDate || today;
 
-					await AttendanceRepository.insertEvent(
-						{
-							userId,
-							eventDate: checkoutDate,
-							eventType: 'checkout',
-							timestampEvent: now,
-							latitude: lat,
-							longitude: lng,
-							distance,
-						},
-						transaction
-					);
+					const getLastAttendanceEvent = await LocationRepository.getLastAttendanceEvent(userId);
 
-					await this.addEventToRedis(userId, 'checkout', now);
 
-					attendanceEvent = 'checkout';
+
+
+					if (getLastAttendanceEvent === "in_office_area") {
+						await AttendanceRepository.insertEvent(
+							{
+								userId,
+								eventDate: checkoutDate,
+								eventType: 'checkout',
+								timestampEvent: now,
+								latitude: lat,
+								longitude: lng,
+								distance,
+							},
+							transaction
+						);
+
+						await this.addEventToRedis(userId, 'checkout', now);
+
+
+						attendanceEvent = 'checkout';
+					}
 				}
+
 
 				state.status = 'out_office_area';
 
@@ -298,8 +313,7 @@ export class LocationService {
 			const shouldEmitByTime =
 				!lastEmit || now.getTime() - lastEmit.getTime() > 10000;
 
-			const SHOULD_EMIT =
-				movement > 3 || attendanceEvent !== null;
+
 
 			if (shouldEmitByTime) {
 				await redisPublisher.publish(

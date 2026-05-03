@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { AttendanceController } from '../http/controllers/attendance.controller';
 import { authenticate } from '../http/middlewares/auth.middleware';
+import { authenticateRatelimiter } from '../http/middlewares/ratelimitMiddleware';
 import { Routes } from '../interfaces/routes.interface';
 
 
@@ -22,8 +23,8 @@ export class AttendanceRoutes implements Routes {
 
 	private initializeRoutes(): void {
 
-		this.router.get(`${this.path}/history`, authenticate, AttendanceController.getHistory);
+		this.router.get(`${this.path}/history`, authenticate, authenticateRatelimiter, AttendanceController.getHistory);
 
-		this.router.get(`${this.path}/today`, authenticate, AttendanceController.getToday);
+		this.router.get(`${this.path}/today`, authenticate, authenticateRatelimiter, AttendanceController.getToday);
 	}
 }

@@ -27,6 +27,26 @@ export class LocationRepository {
 	}
 
 
+	static async getLastAttendanceEvent(userId: string, transaction?: any) {
+		const result: any = await executeQuery({
+			query:
+				`
+    SELECT event_type
+    FROM attendance
+    WHERE user_id = :userId
+    ORDER BY timestamp_event DESC
+    LIMIT 1
+    `,
+			replacements: { userId },
+			type: QueryTypes.INSERT,
+			transaction
+		}
+		);
+
+		return result?.[0]?.event_type || null;
+	}
+
+
 
 
 
@@ -56,12 +76,14 @@ export class LocationRepository {
 		const end = new Date(endDate);
 		end.setHours(23, 59, 59, 999);
 
+
+
 		const startIST = UtilsMain.getDateInIST(start);
 		const endIST = UtilsMain.getDateInIST(end);
 
 		console.log("startDate, endDate >>>> ", {
-			startDate,
-			endDate,
+			startIST,
+			endIST,
 			offset,
 			limit,
 			search,
@@ -87,7 +109,8 @@ export class LocationRepository {
       l.created_at
     FROM locations l
     INNER JOIN users u ON u.id = l.user_id
-    WHERE l.recorded_at BETWEEN :startDate AND :endDate
+    WHERE l.recorded_at >= :startDate
+  AND l.recorded_at <  :endDate
 		${searchCondition}
     ORDER BY l.recorded_at DESC
     LIMIT :limit OFFSET :offset
@@ -109,7 +132,8 @@ export class LocationRepository {
     FROM locations l
     INNER JOIN users u ON u.id = l.user_id
     WHERE l.user_id = :userId
-    AND l.recorded_at BETWEEN :startDate AND :endDate
+     and l.recorded_at >= :startDate
+  AND l.recorded_at <  :endDate
     ORDER BY l.recorded_at DESC
     LIMIT :limit OFFSET :offset
   `;
@@ -117,7 +141,8 @@ export class LocationRepository {
 		const countQuery = `
     SELECT COUNT(*) as total
     FROM locations l
-    WHERE l.recorded_at BETWEEN :startDate AND :endDate
+      WHERE l.recorded_at >= :startDate
+  AND l.recorded_at <  :endDate
 		${searchCondition}
   `;
 
@@ -146,7 +171,7 @@ export class LocationRepository {
 		}
 
 
-		console.log("rows 139 >>>> ", rows);
+
 
 
 
