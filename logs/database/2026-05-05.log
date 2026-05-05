@@ -1,0 +1,7 @@
+{"label":"database","level":"debug","message":"Executing (default): SELECT 1+1 AS result","timestamp":"2026-05-05 23:32:55"}
+{"label":"database","level":"debug","message":"Executing (4732dc8f-82e7-4381-8ec0-2c7c751992ba): START TRANSACTION;","timestamp":"2026-05-05 23:33:52"}
+{"label":"database","level":"debug","message":"Executing (4732dc8f-82e7-4381-8ec0-2c7c751992ba): SELECT * FROM users WHERE email = 'santramanoj1997@gmail.com' LIMIT 1","timestamp":"2026-05-05 23:33:52"}
+{"label":"database","level":"debug","message":"Executing (4732dc8f-82e7-4381-8ec0-2c7c751992ba): SELECT * FROM devices WHERE user_id = '9b1debb1-5e18-45f2-9a9b-2873d494a54b' LIMIT 1","timestamp":"2026-05-05 23:33:53"}
+{"label":"database","level":"debug","message":"Executing (4732dc8f-82e7-4381-8ec0-2c7c751992ba): ROLLBACK;","timestamp":"2026-05-05 23:33:53"}
+{"label":"database","level":"debug","message":"Executing (default): SELECT 1+1 AS result","timestamp":"2026-05-05 23:34:41"}
+{"label":"database","level":"debug","message":"Executing (default): SELECT 1+1 AS result","timestamp":"2026-05-05 23:35:43"}

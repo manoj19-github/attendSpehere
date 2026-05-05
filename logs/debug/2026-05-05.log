@@ -1,0 +1,29 @@
+{"level":"info","message":"🚀 Server running \ton port:5000","timestamp":"2026-05-05 23:32:53"}
+{"level":"info","message":"Redis connected","timestamp":"2026-05-05 23:32:53"}
+{"label":"database","level":"debug","message":"Executing (default): SELECT 1+1 AS result","timestamp":"2026-05-05 23:32:55"}
+{"level":"info","message":"✅ PostgreSQL connected","timestamp":"2026-05-05 23:32:55"}
+{"0":{"created_at":"2026-05-01T07:46:41.829Z","distance_threshold":500,"id":"a2d63def-e363-45d4-969e-8866cb4fa6d0","lat":22.7793,"lng":88.25524,"name":"AttendSphere HQ","office_address":"AttendSphere HQ Address","polling_interval":30000,"radius":101,"time_interval_ms":900000,"updated_at":"2026-05-03T05:14:25.633Z","working_days":[2,3,4,5,1,6,0],"working_end":22,"working_start":8},"level":"info","message":"result: ","timestamp":"2026-05-05 23:32:55"}
+{"created_at":"2026-05-01T07:46:41.829Z","distance_threshold":500,"id":"a2d63def-e363-45d4-969e-8866cb4fa6d0","lat":22.7793,"level":"info","lng":88.25524,"message":"office >>> ","name":"AttendSphere HQ","office_address":"AttendSphere HQ Address","polling_interval":30000,"radius":101,"time_interval_ms":900000,"timestamp":"2026-05-05 23:32:55","updated_at":"2026-05-03T05:14:25.633Z","working_days":[2,3,4,5,1,6,0],"working_end":22,"working_start":8}
+{"level":"info","message":"✅ Office config cached in Redis","timestamp":"2026-05-05 23:32:55"}
+{"label":"database","level":"debug","message":"Executing (4732dc8f-82e7-4381-8ec0-2c7c751992ba): START TRANSACTION;","timestamp":"2026-05-05 23:33:52"}
+{"androidId":"a1b2c3d4","email":"santramanoj1997@gmail.com","fingerprint":"fp_hash_123","level":"info","message":"req.body: ","password":"Santra1997","timestamp":"2026-05-05 23:33:52"}
+{"label":"database","level":"debug","message":"Executing (4732dc8f-82e7-4381-8ec0-2c7c751992ba): SELECT * FROM users WHERE email = 'santramanoj1997@gmail.com' LIMIT 1","timestamp":"2026-05-05 23:33:52"}
+{"created_at":"2026-04-29T00:58:05.469Z","email":"santramanoj1997@gmail.com","full_name":"Manoj Santra","id":"9b1debb1-5e18-45f2-9a9b-2873d494a54b","level":"info","message":"user: ","password":"$2b$10$br.FxJE4.dWUmzFYsIrJFO.nc5AIrjRVUGoREiSgfC7bML0KB08W2","role":"employee","timestamp":"2026-05-05 23:33:53"}
+{"label":"database","level":"debug","message":"Executing (4732dc8f-82e7-4381-8ec0-2c7c751992ba): SELECT * FROM devices WHERE user_id = '9b1debb1-5e18-45f2-9a9b-2873d494a54b' LIMIT 1","timestamp":"2026-05-05 23:33:53"}
+{"0":{"android_id":"bedab7c12b344546","created_at":"2026-04-29T00:58:05.469Z","device_model":"M2101K6I","fingerprint":"bedab7c12b344546_M2101K6I_12","id":"79579c67-36a7-42a7-8e39-3a2b8d5d0e65","os_version":"12","user_id":"9b1debb1-5e18-45f2-9a9b-2873d494a54b"},"level":"info","message":"devices: ","timestamp":"2026-05-05 23:33:53"}
+{"level":"info","message":"error: ","timestamp":"2026-05-05 23:33:53"}
+{"label":"database","level":"debug","message":"Executing (4732dc8f-82e7-4381-8ec0-2c7c751992ba): ROLLBACK;","timestamp":"2026-05-05 23:33:53"}
+{"level":"info","message":"🚀 Server running \ton port:5000","timestamp":"2026-05-05 23:34:40"}
+{"level":"info","message":"Redis connected","timestamp":"2026-05-05 23:34:40"}
+{"label":"database","level":"debug","message":"Executing (default): SELECT 1+1 AS result","timestamp":"2026-05-05 23:34:41"}
+{"level":"info","message":"✅ PostgreSQL connected","timestamp":"2026-05-05 23:34:42"}
+{"0":{"created_at":"2026-05-01T07:46:41.829Z","distance_threshold":500,"id":"a2d63def-e363-45d4-969e-8866cb4fa6d0","lat":22.7793,"lng":88.25524,"name":"AttendSphere HQ","office_address":"AttendSphere HQ Address","polling_interval":30000,"radius":101,"time_interval_ms":900000,"updated_at":"2026-05-03T05:14:25.633Z","working_days":[2,3,4,5,1,6,0],"working_end":22,"working_start":8},"level":"info","message":"result: ","timestamp":"2026-05-05 23:34:42"}
+{"created_at":"2026-05-01T07:46:41.829Z","distance_threshold":500,"id":"a2d63def-e363-45d4-969e-8866cb4fa6d0","lat":22.7793,"level":"info","lng":88.25524,"message":"office >>> ","name":"AttendSphere HQ","office_address":"AttendSphere HQ Address","polling_interval":30000,"radius":101,"time_interval_ms":900000,"timestamp":"2026-05-05 23:34:42","updated_at":"2026-05-03T05:14:25.633Z","working_days":[2,3,4,5,1,6,0],"working_end":22,"working_start":8}
+{"level":"info","message":"✅ Office config cached in Redis","timestamp":"2026-05-05 23:34:42"}
+{"level":"info","message":"🚀 Server running \ton port:5000","timestamp":"2026-05-05 23:35:42"}
+{"level":"info","message":"Redis connected","timestamp":"2026-05-05 23:35:42"}
+{"label":"database","level":"debug","message":"Executing (default): SELECT 1+1 AS result","timestamp":"2026-05-05 23:35:43"}
+{"level":"info","message":"✅ PostgreSQL connected","timestamp":"2026-05-05 23:35:43"}
+{"0":{"created_at":"2026-05-01T07:46:41.829Z","distance_threshold":500,"id":"a2d63def-e363-45d4-969e-8866cb4fa6d0","lat":22.7793,"lng":88.25524,"name":"AttendSphere HQ","office_address":"AttendSphere HQ Address","polling_interval":30000,"radius":101,"time_interval_ms":900000,"updated_at":"2026-05-03T05:14:25.633Z","working_days":[2,3,4,5,1,6,0],"working_end":22,"working_start":8},"level":"info","message":"result: ","timestamp":"2026-05-05 23:35:43"}
+{"created_at":"2026-05-01T07:46:41.829Z","distance_threshold":500,"id":"a2d63def-e363-45d4-969e-8866cb4fa6d0","lat":22.7793,"level":"info","lng":88.25524,"message":"office >>> ","name":"AttendSphere HQ","office_address":"AttendSphere HQ Address","polling_interval":30000,"radius":101,"time_interval_ms":900000,"timestamp":"2026-05-05 23:35:43","updated_at":"2026-05-03T05:14:25.633Z","working_days":[2,3,4,5,1,6,0],"working_end":22,"working_start":8}
+{"level":"info","message":"✅ Office config cached in Redis","timestamp":"2026-05-05 23:35:43"}
