@@ -24,6 +24,11 @@
             "date": 1778004172308,
             "name": "C:\\Users\\santr\\attendSphere\\logs\\database\\2026-05-05.log",
             "hash": "67e6f080fe084ee7d4365c51f0c744b711dc34fdd374c5cbd52c38430cad9297"
+        },
+        {
+            "date": 1778006720031,
+            "name": "C:\\Users\\santr\\attendSphere\\logs\\database\\2026-05-06.log",
+            "hash": "c28ebfe7c2deb8bfd57152a9d3d15e473f4fdbcb65ec72a3f5afd91b38b7f80d"
         }
     ],
     "hashType": "sha256"

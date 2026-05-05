@@ -13,7 +13,7 @@ export class OfficeSettingsService {
 
 	static async getConfig(transaction?: any): Promise<OfficeConfig> {
 		const cachedRedisConfig = await redisClient.get(OFFICE_CONFIG_KEY);
-		console.log('cachedRedisConfig: ', cachedRedisConfig);
+
 		let result: any;
 
 		if (cachedRedisConfig) {

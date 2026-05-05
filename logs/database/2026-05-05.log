@@ -9,3 +9,4 @@
 {"label":"database","level":"debug","message":"Executing (1efd5adb-c65d-4970-8d9d-9787567d0f1a): START TRANSACTION;","timestamp":"2026-05-05 23:35:55"}
 {"label":"database","level":"debug","message":"Executing (1efd5adb-c65d-4970-8d9d-9787567d0f1a): SELECT * FROM users WHERE email = 'santramanoj1997@gmail.com' LIMIT 1","timestamp":"2026-05-05 23:35:55"}
 {"label":"database","level":"debug","message":"Executing (1efd5adb-c65d-4970-8d9d-9787567d0f1a): COMMIT;","timestamp":"2026-05-05 23:35:55"}
+{"label":"database","level":"debug","message":"Executing (default): SELECT 1+1 AS result","timestamp":"2026-05-05 23:36:47"}
