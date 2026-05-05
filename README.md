@@ -1,3 +1,4 @@
+<img width="1536" height="1024" alt="system_design_AttendSpehere (1)" src="https://github.com/user-attachments/assets/19109520-2d6f-4303-99a2-070f525aa051" />
 🚀 Employee Tracking & Attendance System (Backend)
 
 A high-performance backend system for real-time employee tracking and attendance management, built with a focus on accuracy, scalability, and real-world edge case handling.
