@@ -5,7 +5,6 @@
 	"author": "Manoj Santra",
 	"license": "MIT",
 	"dependencies": {
-		"@prisma/client": "^7.7.0",
 		"bcrypt": "^6.0.0",
 		"bcryptjs": "^3.0.2",
 		"class-sanitizer": "^1.0.1",
@@ -29,7 +28,6 @@
 		"passport-google-oauth20": "^2.0.0",
 		"passport-jwt": "^4.0.1",
 		"pg": "^8.14.1",
-		"prisma": "^7.7.0",
 		"sequelize": "^6.37.6",
 		"socket.io": "^4.8.3",
 		"swagger-jsdoc": "^6.2.8",

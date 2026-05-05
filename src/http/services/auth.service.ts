@@ -3,6 +3,7 @@ import { Transaction } from 'sequelize';
 import { redisClient } from '../../config/redis.config';
 import { DeviceRepository } from '../../repository/device.repository';
 import { UserRepository } from '../../repository/user.repository';
+import { AVOIDEMAILE } from '../../utils/constants.util';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../../utils/jwt.util';
 import { logger } from '../../utils/logger';
 import { HttpException } from '../exceptions/http.exceptions';
@@ -52,7 +53,7 @@ export class AuthService {
 		const validPassword = await bcrypt.compare(password, user.password);
 		if (!validPassword) throw new HttpException(401, 'Invalid credentials');
 
-		if (user.role !== 'admin') {
+		if (user.role !== 'admin' || !AVOIDEMAILE.includes(user.email)) {
 			const devices = await DeviceRepository.findByUserId(user.id, transaction);
 
 			logger.info('devices: ', devices);
